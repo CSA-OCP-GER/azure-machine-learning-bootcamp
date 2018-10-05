@@ -97,49 +97,91 @@ import argparse
 import os
 import numpy as np
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.externals import joblib
+import keras
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D
+from keras import backend as K
 
 from azureml.core import Run
 from utils import load_data
 
-# let user feed in 2 parameters, the location of the data files (from datastore), and the regularization rate of the logistic regression model
+# input image dimensions and number of classes
+img_rows, img_cols = 28, 28
+num_classes = 10
+
+# let user feed in parameters
 parser = argparse.ArgumentParser()
 parser.add_argument('--data-folder', type=str, dest='data_folder', help='data folder mounting point')
-parser.add_argument('--regularization', type=float, dest='reg', default=0.01, help='regularization rate')
-args = parser.parse_args()
+parser.add_argument('--batch-size', type=int, dest='batch_size', default=128, help='batch size')
+parser.add_argument('--epochs', type=int, dest='epochs', default=12, help='number of epochs')
 
+args = parser.parse_args()
+batch_size = args.batch_size
+epochs = args.epochs
 data_folder = os.path.join(args.data_folder, 'mnist')
+
 print('Data folder:', data_folder)
 
-# load train and test set into numpy arrays
-# note we scale the pixel intensity values to 0-1 (by dividing it with 255.0) so the model can converge faster.
-X_train = load_data(os.path.join(data_folder, 'train-images.gz'), False) / 255.0
-X_test = load_data(os.path.join(data_folder, 'test-images.gz'), False) / 255.0
+# load train and test set into numpy arrays and scale
+x_train = load_data(os.path.join(data_folder, 'train-images.gz'), False) / 255.0
+x_test = load_data(os.path.join(data_folder, 'test-images.gz'), False) / 255.0
 y_train = load_data(os.path.join(data_folder, 'train-labels.gz'), True).reshape(-1)
 y_test = load_data(os.path.join(data_folder, 'test-labels.gz'), True).reshape(-1)
-print(X_train.shape, y_train.shape, X_test.shape, y_test.shape, sep = '\n')
+
+if K.image_data_format() == 'channels_first':
+    x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
+    x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
+    input_shape = (1, img_rows, img_cols)
+else:
+    x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+    x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+    input_shape = (img_rows, img_cols, 1)
+    
+# convert class vectors to binary class matrices
+y_train = keras.utils.to_categorical(y_train, num_classes)
+y_test = keras.utils.to_categorical(y_test, num_classes)
+
+print(x_train.shape)
+print(y_train.shape)
+print(x_test.shape)
+print(y_test.shape)
 
 # get hold of the current run
 run = Run.get_submitted_run()
 
-print('Train a logistic regression model with regularizaion rate of', args.reg)
-clf = LogisticRegression(C=1.0/args.reg, random_state=42)
-clf.fit(X_train, y_train)
+# Design our Convolutional Neural Network
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
 
-print('Predict the test set')
-y_hat = clf.predict(X_test)
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.Adadelta(),
+              metrics=['accuracy'])
 
-# calculate accuracy on the prediction
-acc = np.average(y_hat == y_test)
+model.fit(x_train, y_train,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(x_test, y_test))
+score = model.evaluate(x_test, y_test, verbose=0)
+
+acc = np.float(score[1])
 print('Accuracy is', acc)
 
-run.log('regularization rate', np.float(args.reg))
-run.log('accuracy', np.float(acc))
+# Log accuracy to our Azure ML Workspace
+run.log('accuracy', acc)
 
+# Save model, the outputs folder is automatically uploaded into experiment record by Batch AI
 os.makedirs('outputs', exist_ok=True)
-# note file saved in the outputs folder is automatically uploaded into experiment record
-joblib.dump(value=clf, filename='outputs/scikit-learn-mnist.pkl')
+model.save('./outputs/keras-tf-mnist.h5')
 ```
 
 Lastly, we need to package the scripts and "send" them to Batch AI. Azure ML uses the `Estimator` class for that:
@@ -149,18 +191,18 @@ from azureml.train.estimator import Estimator
 
 script_params = {
     '--data-folder': ds.as_mount(),
-    '--regularization': 0.8
+    '--batch-size': 128,
+    '--epochs': 10
 }
 
 est = Estimator(source_directory=script_folder,
                 script_params=script_params,
                 compute_target=compute_target,
                 entry_script='train.py',
-                conda_packages=['scikit-learn'])
+                conda_packages=['keras'])
 ```
 
-
-Lastly, we can kick off the job (this will take a while, as our Batch AI cluster first needs to create a compute node):
+Lastly, we can kick off the job (this will take a while):
 
 ```python
 run = experiment.submit(config=est)
@@ -176,14 +218,14 @@ RunDetails(run).show()
 
 In the background, Azure ML will now perform the following steps:
 
-* Package our scripts as a Docker image and push it to our Azure Container Registry (initially ~10 minutes)
-* Scale up the Batch AI cluster
+* Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take ~10 minutes)
+* Scale up the Batch AI cluster (if required)
 * Pull the Docker image to the Batch AI cluster
 * Mount the MNIST data from Azure Files to the Batch AI cluster (for fast local access)
 * Start the training job
 * Publish the results to our Workspace (same as before)
 
-The first run might take 10-20 minutes. Subsequent runs will take 1-2 minutes.
+The first run might take 10-20 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed.
 
 In the Batch AI Experiments section, we can see our run:
 
@@ -208,3 +250,10 @@ And if we want, we can delete our Batch AI cluster:
 ```python
 compute_target.delete()
 ```
+
+At this point (in addition to the results from challenge 1):
+
+* We used Azure ML to leverage Azure Batch AI to train a Convolutional Neural Network (CNN)
+* We switched our training framework from Scikit-learn to Keras with TensorFlow in the backend (without changing any Azure ML code!)
+* We registered our new model (>99% accuracy) in our Azure ML Workspace
+
