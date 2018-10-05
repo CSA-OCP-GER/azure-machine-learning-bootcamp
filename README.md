@@ -1,4 +1,4 @@
-# Azure Machine Learning Bootcamp Bootcamps
+# Azure Machine Learning Bootcamp Materials
 
 Here are the top two resources you'll need this afternoon:
 
@@ -7,9 +7,9 @@ Here are the top two resources you'll need this afternoon:
 
 # Challenges
 
-## Challenge 1 - Model training on Azure
+## Challenge 1 - Basic model training on Azure
 
-In this first challenge, you'll be training a machine learning model on Azure. We'll be using the popular MNIST dataset, as it allows us to focus on getting familiar with the mechanics of Azure Machine Learning.
+In this first challenge, you'll be training a basic machine learning model on Azure. We'll be using the popular MNIST dataset, as it allows us to focus on getting familiar with the mechanics of Azure Machine Learning.
 
 ![alt text](images/mnist.png "The MNIST dataset")
 
@@ -18,10 +18,30 @@ Tools needed:
 * [Azure Notebooks](https://notebooks.azure.com)
 * [`utils.py`](utils.py)
 
-## Challenge 2 - Model deployment on Azure
+If you are stuck, check out the [hints](hints/challenge_01.md)!
 
-In this second challenge, you'll be taking the model you've trained in the first challenge and deploy it to Azure Container Instances (ACI). Alternatively, you can deploy it to Azure Kubernetes Service (AKS).
+## Challenge 2 - Advanced model training on Azure
 
-## Challenge 3 - Automated Machine Learning
+In this challenge, you'll be training a more advanced machine learning model on Azure. We'll be using the same dataset, but this time, we'll use Azure Batch AI for speeding up our training.
+
+Tools needed:
+* Notebook from Challenge 1
+
+If you are stuck, check out the [hints](hints/challenge_02.md)!
+
+## Challenge 3 - Model deployment on Azure
+
+In this third challenge, you'll be taking the model you've trained in the first or second challenge and deploy it to Azure Container Instances (ACI). Alternatively, you can deploy it to Azure Kubernetes Service (AKS).
+
+If you are stuck, check out the [hints](hints/challenge_03.md)!
+
+## Challenge 4 - Automated Machine Learning
 
 In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which machine learning algorithm performs best on your dataset.
+
+If you are stuck, check out the [hints](hints/challenge_04.md)!
+
+## Further Challenges
+
+* Secure our model endpoint on ACI with an Authentication Key
+* Embed Application Insights into our model for monitoring

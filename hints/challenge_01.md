@@ -131,8 +131,8 @@ In the portal, we can see the output of our run:
 We can also query the metrics and outputs for our run:
 
 ```python
-print("Model metrics:", run.get_metrics())
-print("Model files", run.get_file_names())
+print("Run metrics:", run.get_metrics())
+print("Run model files", run.get_file_names())
 ```
 
 ```python
@@ -153,7 +153,4 @@ At this point:
 * Azure ML knows about our experiment and our initial run
 * Azure ML has the output files of our trained model in Blob storage
 * We have registered our initial model as a Azure ML Model in our Workspace
-
-## Training an advanced Machine Learning model in Batch AI
-
 
