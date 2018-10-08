@@ -9,39 +9,58 @@ Here are the top two resources you'll need this afternoon:
 
 ## Challenge 1 - Basic model training on Azure
 
-In this first challenge, you'll be training a basic machine learning model on Azure. We'll be using the popular MNIST dataset, as it allows us to focus on getting familiar with the mechanics of Azure Machine Learning.
+In this first challenge, you'll be training a basic machine learning model on Azure. We'll be using the popular MNIST dataset, as it allows us to focus on getting familiar with the mechanics of Azure Machine Learning. MNIST is a data set containing:
+
+* 60000 hand-written digits as training data
+* 10000 hand-written digits as testing data
+
+Here are some examples:
 
 ![alt text](images/mnist.png "The MNIST dataset")
 
-Tools needed:
-* Machine Learning service workspace (preview) - Deploy from Azure Portal
-* [Azure Notebooks](https://notebooks.azure.com)
-* [`utils.py`](utils.py)
+The goal is to build a machine learning model, that
+* takes an unseen image as an input (28x28 pixels) and
+* outputs if there was a 0, 1, 2, ... or 9 on the image
 
-If you are stuck, check out the [hints](hints/challenge_01.md)!
+Guidance:
+* Deploy from Azure Portal: `Machine Learning service workspace (preview)`
+* You'll write your code in [Azure Notebooks](https://notebooks.azure.com)
+* This file is helpful: [`utils.py`](utils.py)
+* We'll be using `scikit-learn` to build a simple `LogisticRegression` classifier
+* Target accuracy of our model on the test data set: `>90%`
+
+Here are some **[hints](hints/challenge_01.md)** for this challenge!
 
 ## Challenge 2 - Advanced model training on Azure
 
-In this challenge, you'll be training a more advanced machine learning model on Azure. We'll be using the same dataset, but this time, we'll use Azure Batch AI for speeding up our training.
+In this challenge, you'll be training a more advanced machine learning model on Azure (in fact, you'll be training a Convolution Neural Network). We'll be using the same data set, but this time, we'll use Azure Batch AI for speeding up our training.
 
-Tools needed:
-* Notebook from Challenge 1
+Guidance:
+* Make a copy of the Notebook from Challenge 1
+* This time we'll be using `Keras` to build a Convolution Neural Network
+* Target accuracy of our model on the test data set: `>99%`
 
-If you are stuck, check out the [hints](hints/challenge_02.md)!
+Here are some **[hints](hints/challenge_02.md)** for this challenge!
 
 ## Challenge 3 - Model deployment on Azure
 
-In this third challenge, you'll be taking the model you've trained in the first or second challenge and deploy it to Azure Container Instances (ACI). Alternatively, you can deploy it to Azure Kubernetes Service (AKS).
+In this third challenge, you'll be taking the model you've trained in the first or second challenge and deploy it to Azure Container Instances (ACI). Alternatively, you can deploy it to Azure Kubernetes Service (AKS), but you need to have a look at the [Azure Machine Learning Services documentation](https://docs.microsoft.com/en-us/azure/machine-learning/service/) for that.
 
-If you are stuck, check out the [hints](hints/challenge_03.md)!
+Guidance:
+* Take the model from challenge 2 and package it as a Docker image (Azure ML will do that for us)
+* Deploy it on ACI
+
+Here are some **[hints](hints/challenge_03.md)** for this challenge!
 
 ## Challenge 4 - Automated Machine Learning
 
-In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which machine learning algorithm performs best on your dataset.
+In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which machine learning algorithm performs best on our dataset.
 
-If you are stuck, check out the [hints](hints/challenge_04.md)!
+Here are some **[hints](hints/challenge_04.md)** for this challenge!
 
 ## Further Challenges
 
+Most likely, we won't be able to tackle those points out of time reasons:
+
 * Secure our model endpoint on ACI with an Authentication Key
-* Embed Application Insights into our model for monitoring
+* Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
