@@ -64,3 +64,13 @@ Most likely, we won't be able to tackle those points out of time reasons:
 
 * Secure our model endpoint on ACI with an Authentication Key
 * Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
+
+# Further Material
+
+* [Azure Machine Learning Samples on GitHub](https://github.com/Azure/MachineLearningNotebooks)
+* [Azure Machine Learning Overview](https://azure.microsoft.com/en-us/blog/azure-ai-making-ai-real-for-business/)
+* [Azure Machine Learning Overview - What's new](https://azure.microsoft.com/en-us/blog/what-s-new-in-azure-machine-learning-service/)
+* [Automated Machine Learning Overview](https://azure.microsoft.com/en-us/blog/announcing-automated-ml-capability-in-azure-machine-learning/)
+* [AI Tools for VS Code](https://visualstudio.microsoft.com/downloads/ai-tools-vscode/)
+* [PyTorch Support for Azure ML](https://azure.microsoft.com/en-us/blog/world-class-pytorch-support-on-azure/)
+* [Azure Machine Learning Pipelines](https://docs.microsoft.com/en-us/azure/machine-learning/service/concept-ml-pipelines)
