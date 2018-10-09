@@ -60,13 +60,15 @@ Here are some **[hints](hints/challenge_04.md)** for this challenge!
 In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which machine learning algorithm performs best on our dataset.
 
 Guidance:
-* 
+* Create a new Azure Notebook
+* Take the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset)
+* Leverage [Automated Machine Learning](https://docs.microsoft.com/en-us/azure/machine-learning/service/tutorial-auto-train-models) to automatically finding the best-performing regression model for predicting house prices
 
 ## Further Challenges
 
 Most likely, we won't be able to tackle those points out of time reasons:
 
-* Secure our model endpoint on ACI with an Authentication Key
+* Secure our model endpoint on ACI with an authentication key
 * Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
 
 # Further Material

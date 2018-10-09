@@ -251,7 +251,7 @@ In the background, Azure ML will now perform the following steps:
 * Start the training job
 * Publish the results to our Workspace (same as before)
 
-The first run might take 10-30 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in 1-2 minutes (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
+The first run might take 10-25 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
 
 In the Batch AI Experiments section, we can see our run:
 
