@@ -251,7 +251,7 @@ In the background, Azure ML will now perform the following steps:
 * Start the training job
 * Publish the results to our Workspace (same as before)
 
-The first run might take 10-20 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed.
+The first run might take 10-30 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in 1-2 minutes (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
 
 In the Batch AI Experiments section, we can see our run:
 
@@ -264,7 +264,11 @@ print("Run metrics:", run.get_metrics())
 print("Run model files", run.get_file_names())
 ```
 
-Ok, this already looks much better, we're now able to predict our test data with over `99%` accuracy!
+This time we logged our training details as charts:
+
+![alt text](../images/02-final_run.png "Final run results")
+
+This already looks much better, we're now able to predict our test data with over `99%` accuracy!
 
 Lastly, we can register our new model (this is the same code as before):
 

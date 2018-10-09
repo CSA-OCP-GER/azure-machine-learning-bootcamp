@@ -29,6 +29,8 @@ Let's reference our registered model from challenge 2:
 from azureml.core.model import Model
 
 model = Model(ws, name="keras-tf-mnist-model")
+
+# Make sure we have the correct model
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
@@ -52,10 +54,10 @@ def init():
 def run(raw_data):
     image_url = json.loads(raw_data)['image_url']    
     image = Image.open(BytesIO(requests.get(image_url).content))
-    img = np.array(image.convert('L'), dtype=np.float32).reshape(1, 28, 28, 1) / 255.0
+    img = 1 - (np.array(image.convert('L'), dtype=np.float32).reshape(1, 28, 28, 1) / 255.0)
     # make prediction
     y = model.predict(img)
-    return json.dumps(y.tolist())
+    return json.dumps({"prediction": int(np.argmax(y)), "probabilities": y.tolist()})
 ```
 
 We also need to tell Azure ML which dependencies our packaged model has (similar to when we used Azure Batch AI):
@@ -120,11 +122,13 @@ import requests
 import json
 
 headers = {'Content-Type':'application/json'}
-data = '{"image_url": "https://bootcamps.blob.core.windows.net/ml-test-images/0.png"}'
+data = '{"image_url": "https://bootcamps.blob.core.windows.net/ml-test-images/4.png"}'
 
 resp = requests.post(service.scoring_uri, data=data, headers=headers)
 print("Prediction Results:", resp.text)
 ```
+
+The prediction results contain the probabilities for the image being a 0, 1, 2, ... or 9.
 
 Here are some more hand-drawn test images:
 
