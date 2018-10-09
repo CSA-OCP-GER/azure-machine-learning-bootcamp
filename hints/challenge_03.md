@@ -1,9 +1,9 @@
 # Hints for Challenge 3
 
-After challenge 2, we finally have a model has an accuracy of more than 99% - time to deploy it to production!
+After challenge 2, we finally have a model that an accuracy of more than 99% - time to deploy it to production!
 Hence, we'll now be taking the model and we'll deploy it on [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/).
 
-Firstly, let's create a new notebook `challenge03.ipynb` for this challenge.
+**We'll reuse the same notebook as in challenge 2, as it will have the container images cached.**
 
 Our Azure Subscription must first have the providers for Azure Container Instances enabled:
 
@@ -12,9 +12,9 @@ Our Azure Subscription must first have the providers for Azure Container Instanc
 !az provider register -n Microsoft.ContainerInstance
 ```
 
-The leading `!` tell the notebook cell to execute the code on the command line inside the Azure Notebook itself.
+The leading `!` tells the notebook cell to execute the code on the command line inside the Azure Notebook VM.
 
-As before, let's connect to our Workspace:
+As before, let's connect to our Workspace (not really needed, as we're still in the same notebook):
 
 ```python
 from azureml.core import Workspace, Experiment, Run
@@ -23,7 +23,7 @@ import math, random, json
 ws = Workspace.from_config()
 ```
 
-Since we're in a new Notebook, we need to reference our registered model from the last Notebook:
+Let's reference our registered model from challenge 2:
 
 ```python
 from azureml.core.model import Model
@@ -32,18 +32,16 @@ model = Model(ws, name="keras-tf-mnist-model")
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-We need to write a short `score.py` script, that Azure ML understands for loading our model and exposing it as a webservice:
+We need to write a short `score.py` script, that Azure ML understands for loading our model and exposing it as a web service:
 
 ```python
 %%writefile score.py
-import json
+import json, os, requests
 import numpy as np
-import os
 from io import BytesIO
-from keras.models import load_model
 from PIL import Image
+from keras.models import load_model
 from azureml.core.model import Model
-import requests
 
 def init():
     global model
@@ -70,7 +68,7 @@ myenv.add_pip_package("pynacl==1.2.1")
 myenv.add_pip_package("keras==2.2.4")
 myenv.add_pip_package("tensorflow==1.11.0")
 
-with open("myenv.yml","w") as f:
+with open("keras-tf-mnist.yml","w") as f:
     f.write(myenv.serialize_to_string())
 ```
 
@@ -87,7 +85,7 @@ aciconfig = AciWebservice.deploy_configuration(cpu_cores=1,
 
 image_config = ContainerImage.image_configuration(execution_script = "score.py", 
                                     runtime = "python", 
-                                    conda_file = "myenv.yml")
+                                    conda_file = "keras-tf-mnist.yml")
 
 service = Webservice.deploy_from_model(name = "keras-tf-mnist-service",
                                        deployment_config = aciconfig,
@@ -108,7 +106,7 @@ Shortly after, we should also see our ACI service coming up under the `Deploymen
 
 ![alt text](../images/03-aci_creating.png "Our ACI service is starting")
 
-Lastly, we can print out the service URL:
+Lastly, we can print out the service URL and the state of the service:
 
 ```python
 print(service.state)
@@ -122,8 +120,30 @@ import requests
 import json
 
 headers = {'Content-Type':'application/json'}
-data = '{"image_url": "https://dpk18.blob.core.windows.net/test/4.png"}'
+data = '{"image_url": "https://bootcamps.blob.core.windows.net/ml-test-images/0.png"}'
 
 resp = requests.post(service.scoring_uri, data=data, headers=headers)
 print("Prediction Results:", resp.text)
 ```
+
+Here are some more hand-drawn test images:
+
+```
+https://bootcamps.blob.core.windows.net/ml-test-images/0.png
+https://bootcamps.blob.core.windows.net/ml-test-images/1.png
+https://bootcamps.blob.core.windows.net/ml-test-images/2.png
+https://bootcamps.blob.core.windows.net/ml-test-images/3.png
+https://bootcamps.blob.core.windows.net/ml-test-images/4.png
+https://bootcamps.blob.core.windows.net/ml-test-images/5.png
+https://bootcamps.blob.core.windows.net/ml-test-images/6.png
+https://bootcamps.blob.core.windows.net/ml-test-images/7.png
+https://bootcamps.blob.core.windows.net/ml-test-images/8.png
+https://bootcamps.blob.core.windows.net/ml-test-images/9.png
+```
+
+At this point:
+
+* We put our high-accuracy model and deploy it on Azure Container Instances as a web service
+* We can do a simple RESTful API call to our endpoint for scoring a 28x28 pixel sized image
+
+Often, we have simpler data set and want to figure out how we can best classify or predict certain data points - without trying out a lot of Machine Learning algorithms ourselves. Hence, we'll look at Automated Machine Learning in the [last challenge](challenge_04.md).

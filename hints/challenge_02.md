@@ -172,18 +172,20 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(x_test, y_test))
-score = model.evaluate(x_test, y_test, verbose=0)
+train_score = model.fit(x_train, y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        validation_data=(x_test, y_test))
+test_score = model.evaluate(x_test, y_test, verbose=0)
 
-acc = np.float(score[1])
-print('Accuracy is', acc)
+accuracy = np.float(test_score[1])
+print('Accuracy is', accuracy)
 
 # Log accuracy to our Azure ML Workspace
-run.log('accuracy', acc)
+run.log('Test Accuracy', accuracy)
+run.log_list("Train Accuracy", train_score.history['acc'])
+run.log_list("Train Loss", train_score.history['loss'])
 
 # Save model, the outputs folder is automatically uploaded into experiment record by Batch AI
 os.makedirs('outputs', exist_ok=True)
@@ -199,13 +201,15 @@ This looks a little bit more complex than our last example! Let's walk through w
 1. We build a Convolution Neural Network with two convolutional layers with ReLu as the activation function, followed by a dense 128 neuron large fully connected layer
 1. We let Keras assemble and train the model
 1. We run our test data through it and get the predictions
-1. We log the final accuracy to our experiment
+1. We log the train and test accuracies to our experiment
 1. We save the model to the `outputs/` folder (Batch AI will automatically upload that folder to the experiment afterwards)
 
 To get the training working, we need to package the scripts and "send" them to Batch AI. Azure ML uses the `Estimator` class for that:
 
 ```python
 from azureml.train.estimator import Estimator
+
+ds = ws.get_default_datastore()
 
 script_params = {
     '--data-folder': ds.as_mount(),
@@ -236,7 +240,7 @@ from azureml.train.widgets import RunDetails
 RunDetails(run).show()
 ```
 
- The initial run will take a while, here's why:
+The initial run will take a while, here's why:
 
 In the background, Azure ML will now perform the following steps:
 
