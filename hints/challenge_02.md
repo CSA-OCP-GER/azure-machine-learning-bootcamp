@@ -1,16 +1,16 @@
 # Hints for Challenge 2
 
-Our model in challenge 1 had an accuracy of ~92%. For the MNIST dataset, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training locally in our Azure Notebook, we'll be using [Azure Batch AI](https://azure.microsoft.com/en-us/services/batch-ai/) to train our model on a dedicated compute cluster.
+Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Azure Notebook, we'll be using [Azure Batch AI](https://azure.microsoft.com/en-us/services/batch-ai/) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
 
-Firstly, let's create a new notebook `challenge02.ipynb` for this challenge.
+First, let's create a new notebook `challenge02.ipynb` for this challenge.
 
-As before, let's connect to our Azure ML Workspace and reference our existing experiment:
+As before, let's connect to our Azure ML Workspace, but we'll create a new experiment this time:
 
 ```python
 from azureml.core import Workspace, Experiment, Run
 ws = Workspace.from_config()
 
-experiment = Experiment(workspace = ws, name = "scikit-learn-mnist")
+experiment = Experiment(workspace = ws, name = "keras-tf-mnist")
 ```
 
 We should still have our MNIST dataset sitting in the `./data/` folder from challenge 1, but just in case, we'll download it again:
@@ -27,7 +27,9 @@ urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ub
 urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', filename='./data/test-labels.gz')
 ```
 
-Since we'll need to access that MNIST dataset from our Batch AI cluster, we'll upload it to the datastore that our Azure ML Workspace provides for us. This code will request the default datastore (Azure Files) and upload the 4 files from MNIST into the `./mnist` folder:
+In this challenge, we'll be training remotely. Therefore, we'll need to access the MNIST dataset inside our Batch AI cluster.
+
+To do so, we'll upload it to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Files) and upload the four files from MNIST into the `./mnist` folder:
 
 ```python
 ds = ws.get_default_datastore()
@@ -38,7 +40,7 @@ print(ds.datastore_type, ds.account_name, ds.container_name)
 ds.upload(src_dir='./data', target_path='mnist', overwrite=True, show_progress=True)
 ```
 
-If we go to the default Storage Account that the Azure ML Workspace created for us, and go to Azure Files, we can see that the dataset has been uploaded:
+If we go to the default Storage Account that the Azure ML Workspace created for us, then select Azure Files, we can see that the dataset has been uploaded:
 
 ![alt text](../images/02-dataset_in_azure_files.png "MNIST dataset in Azure Files")
 
@@ -74,11 +76,15 @@ except ComputeTargetException:
     print(compute_target.status.serialize())
 ```
 
-If we now look under the `Compute` tab, in our Azure ML Workspace, we can see our Batch AI cluster:
+Here we can configure our cluster size, the initial VM count, autoscaling, and most importantly, the VM Size. In our example, we'll stick with a small VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance.
+
+If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Batch AI cluster:
 
 ![alt text](../images/02-create_cluster.png "Create our Batch AI cluster for training")
 
-Currently, we have all our code in our Azure Notebook. Obviously, our Batch AI cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
+The cluster VMs will take a few minutes to spin up.
+
+In the last challenge, we had all our code in our Azure Notebook. Since we're training remotely now, our Batch AI cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
 
 ```python
 import os, shutil
@@ -88,7 +94,7 @@ os.makedirs(script_folder, exist_ok=True)
 shutil.copy('utils.py', script_folder)
 ```
 
-Let this cell just write the `train.py` to the `scripts` folder (we could have created it manually and copied it in):
+This cell writes the `train.py` to the `scripts` folder (we could have created it manually and copied it in):
 
 ```python
 %%writefile $script_folder/train.py
@@ -184,7 +190,19 @@ os.makedirs('outputs', exist_ok=True)
 model.save('./outputs/keras-tf-mnist.h5')
 ```
 
-Lastly, we need to package the scripts and "send" them to Batch AI. Azure ML uses the `Estimator` class for that:
+This looks a little bit more complex than our last example! Let's walk through what this script does:
+
+1. We define the input parameters for the script (data folder, batch size, and number of training epochs)
+1. We load the data from our Azure Files share
+1. We transform the data to the format that `Keras` expects
+1. We get hold of the current run (`Run.get_submitted_run()`) - the SDK will manage the run this time
+1. We build a Convolution Neural Network with two convolutional layers with ReLu as the activation function, followed by a dense 128 neuron large fully connected layer
+1. We let Keras assemble and train the model
+1. We run our test data through it and get the predictions
+1. We log the final accuracy to our experiment
+1. We save the model to the `outputs/` folder (Batch AI will automatically upload that folder to the experiment afterwards)
+
+To get the training working, we need to package the scripts and "send" them to Batch AI. Azure ML uses the `Estimator` class for that:
 
 ```python
 from azureml.train.estimator import Estimator
@@ -202,7 +220,9 @@ est = Estimator(source_directory=script_folder,
                 conda_packages=['keras'])
 ```
 
-Lastly, we can kick off the job (this will take a while):
+As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script parameters, for trying out different hyperparameters (not covered here).
+
+Lastly, we can kick off the job:
 
 ```python
 run = experiment.submit(config=est)
@@ -216,10 +236,12 @@ from azureml.train.widgets import RunDetails
 RunDetails(run).show()
 ```
 
+ The initial run will take a while, here's why:
+
 In the background, Azure ML will now perform the following steps:
 
 * Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take ~10 minutes)
-* Scale up the Batch AI cluster (if required)
+* Scale up the Batch AI cluster (if initial size was 0)
 * Pull the Docker image to the Batch AI cluster
 * Mount the MNIST data from Azure Files to the Batch AI cluster (for fast local access)
 * Start the training job
@@ -238,14 +260,16 @@ print("Run metrics:", run.get_metrics())
 print("Run model files", run.get_file_names())
 ```
 
-Same code for registering our mode:
+Ok, this already looks much better, we're now able to predict our test data with over `99%` accuracy!
+
+Lastly, we can register our new model (this is the same code as before):
 
 ```python
-model = run.register_model(model_name='scikit-learn-mnist-model', model_path='outputs/scikit-learn-mnist.pkl')
+model = run.register_model(model_name='keras-tf-mnist-model', model_path='outputs/keras-tf-mnist.h5')
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-And if we want, we can delete our Batch AI cluster:
+If we want, we can also delete our Batch AI cluster (we won't need it in the next challenges):
 
 ```python
 compute_target.delete()
@@ -253,7 +277,8 @@ compute_target.delete()
 
 At this point (in addition to the results from challenge 1):
 
-* We used Azure ML to leverage Azure Batch AI to train a Convolutional Neural Network (CNN)
-* We switched our training framework from Scikit-learn to Keras with TensorFlow in the backend (without changing any Azure ML code!)
-* We registered our new model (>99% accuracy) in our Azure ML Workspace
+* We used the Azure Machine Learning SDK with Azure Batch AI in the background to train a Convolutional Neural Network (CNN)
+* We switched our training framework from Scikit-Learn to Keras with TensorFlow in the backend (without changing any Azure ML code!)
+* We registered our new model (>`99%` accuracy) in our Azure ML Workspace
 
+Great, now we have a well performing model. Obviously, we want other people, maybe some developers, make use of it. Therefore, we'll deploy it as an API to production in the [next challenge](challenge_03.md).
