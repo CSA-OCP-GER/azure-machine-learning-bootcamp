@@ -4,23 +4,27 @@
 
 In the Azure Portal, create a new `Machine Learning service workspace (preview)` Service:
 
+* Workspace name: `azure-ml-bootcamp`
+* Resource Group: `azure-ml-bootcamp`
+* Location: `West Europe` (but does not really matter)
+
 ![alt text](../images/01-create_workspace.png "Create Machine Learning Workspace")
 
 Let's have a look at our Resource Group:
 
 ![alt text](../images/01-resource_group.png "Our resource group")
 
-* Application Insights	
-* Storage account	
-* Key vault	
-* Container registry
-* Machine Learning service workspace
+* Application Insights - used for monitoring our models in production
+* Storage account - this will store our logs, model outputs, etc.
+* Key vault - stores our secrets
+* Container registry - stores our containerized models
+* Machine Learning service workspace - the centre point for Machine Learning on Azure
 
-Create a free account on [Azure Notebooks](https://notebooks.azure.com). Then, create a new notebook:
+Create a free account on [Azure Notebooks](https://notebooks.azure.com). Then, create a new notebook (no need to make it `Public`):
 
 ![alt text](../images/01-create_notebook.png "Our new Azure Notebook for our code")
 
-Inside the new Azure Notebook, create a `config.json` and replace the values with your own:
+Inside the newly created Azure Notebook, create a `config.json` and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):
 
 ```json
 {
@@ -30,7 +34,9 @@ Inside the new Azure Notebook, create a `config.json` and replace the values wit
 }
 ```
 
-Download [`utils.py`](utils.py) and upload it into your notebook.
+The `config.json` is used by the Azure Machine Learning SDK to connect to your ML workspace.
+
+Download [`utils.py`](../utils.py) and upload it into your notebook.
 
 Finally, we can create a new Python Notebook where we'll run our code in:
 
