@@ -226,6 +226,8 @@ est = Estimator(source_directory=script_folder,
 
 As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script parameters, for trying out different hyperparameters (not covered here).
 
+**Note**: There is also a separate `TensorFlow` Estimator for just TensorFlow, see [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-tensorflow). Since we want to keep it generic in this challenge, we'll rely on the standard `Estimator`.
+
 Lastly, we can kick off the job:
 
 ```python
