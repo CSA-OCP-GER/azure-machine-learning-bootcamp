@@ -54,6 +54,16 @@ ws = Workspace.from_config()
 
 You can run the cell by hitting `Run` or pressing `Shift+Enter`. This cell imports the relevant libraries from the Azure Machine Learning SDK, reads our `config.json` and connects the notebook to our Machine Learning Workspace in Azure.
 
+***Note (when experiencing subscription ID errors):***
+
+If you are using multiple subscriptions, it might be required to tell the Azure Notebook, which one it should use. Hence, create a new cell and adapt the following code to use your subscription id (the one you have used in `config.json`):
+
+```
+!az account set -s "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
+```
+
+Once you have ran the cell, restart the Notebook kernel (`Kernel` --> `Restart & Clear Output`) and wait a few seconds until it has restarted.
+
 Next, let's create a new experiment (this will later show up in our ML Workspace in Azure). This is where all our experiments will be logged to:
 
 ```python

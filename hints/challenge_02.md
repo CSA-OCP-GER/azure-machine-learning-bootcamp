@@ -46,6 +46,9 @@ If we go to the default Storage Account that the Azure ML Workspace created for 
 
 Next, we can create an empty Batch AI cluster in Azure:
 
+***Note:***
+If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, you might need to create the Batch AI cluster in the `eastus` region, as `westeurope` is not enabled by default. To do so, just uncomment the `#location='eastus',` line. 
+
 ```python
 from azureml.core.compute import ComputeTarget, BatchAiCompute
 from azureml.core.compute_target import ComputeTargetException
@@ -63,10 +66,11 @@ try:
 except ComputeTargetException:
     print('creating a new compute target...')
     compute_config = BatchAiCompute.provisioning_configuration(vm_size="STANDARD_D2_V2", # small CPU-based VM
-                                                                #vm_priority='lowpriority', # optional
-                                                                autoscale_enabled=True,
-                                                                cluster_min_nodes=1, 
-                                                                cluster_max_nodes=1)
+                                                               #location='eastus', # use eastus location if you are using a free or Pay-as-you-go subscription!
+                                                               #vm_priority='lowpriority', # optional
+                                                               autoscale_enabled=True,
+                                                               cluster_min_nodes=1, 
+                                                               cluster_max_nodes=1)
 
     # create the cluster and wait until it has been provisioned
     compute_target = ComputeTarget.create(ws, batchai_cluster_name, compute_config)
