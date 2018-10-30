@@ -71,6 +71,9 @@ Most likely, we won't be able to tackle those points out of time reasons:
 * Secure our model endpoint on ACI with an authentication key
 * Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
 
+# Recommended Trainings
+* [Microsoft Professional Program for Artificial Intelligence track](https://academy.microsoft.com/en-us/tracks/artificial-intelligence) - extremely in-depth and very extensive (includes a lot of mandatory hands-on)
+
 # Further Material
 
 * [Azure Machine Learning Samples on GitHub](https://github.com/Azure/MachineLearningNotebooks)
@@ -80,3 +83,4 @@ Most likely, we won't be able to tackle those points out of time reasons:
 * [AI Tools for VS Code](https://visualstudio.microsoft.com/downloads/ai-tools-vscode/)
 * [PyTorch Support for Azure ML](https://azure.microsoft.com/en-us/blog/world-class-pytorch-support-on-azure/)
 * [Azure Machine Learning Pipelines](https://docs.microsoft.com/en-us/azure/machine-learning/service/concept-ml-pipelines)
+* [DevOps for AI: Deploying everywhere (Build 2018)](https://www.youtube.com/watch?v=Fo220toRwhM) - might be not fully up to date but gives some good ideas
