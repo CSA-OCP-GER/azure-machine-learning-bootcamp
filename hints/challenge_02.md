@@ -253,6 +253,8 @@ from azureml.train.widgets import RunDetails
 RunDetails(run).show()
 ```
 
+**Note**: The widget current only seems to work in Chrome and Edge.
+
 The initial run will take a while, here's why:
 
 In the background, Azure ML will now perform the following steps:
