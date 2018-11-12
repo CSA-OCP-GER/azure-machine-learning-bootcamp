@@ -12,7 +12,7 @@ Our Azure Subscription must first have the providers for Azure Container Instanc
 !az provider register -n Microsoft.ContainerInstance
 ```
 
-The leading `!` tells the notebook cell to execute the code on the command line inside the Azure Notebook VM.
+The leading `!` tells the notebook cell to execute the code on the command line inside the Jupyter Notebook's VM.
 
 As before, let's connect to our Workspace (not really needed, as we're still in the same notebook):
 
@@ -98,7 +98,7 @@ service = Webservice.deploy_from_model(name = "keras-tf-mnist-service",
 service.wait_for_deployment(show_output = True)
 ```
 
-The first run should take around 10 minutes, as again, the Docker image needs to be build.
+The first deployment should take around 8 minutes, as before, the Docker image needs to be build.
 
 In our Workspace, we can check the `Images` tab:
 

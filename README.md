@@ -1,4 +1,4 @@
-# Azure Machine Learning Bootcamp Materials
+# Azure Machine Learning Bootcamp Materials (Version 1.1)
 
 Here are the top two resources you'll need this afternoon:
 
@@ -26,8 +26,9 @@ The goal is to build a machine learning model, that
 
 Guidance:
 * Deploy from Azure Portal: `Machine Learning service workspace (preview)`
-* You'll write your code in [Azure Notebooks](https://notebooks.azure.com)
+* We'll be writing our code in a Jupyter Notebook in a [DSVM (Data Science Virtual Machine)](https://azure.microsoft.com/en-us/services/virtual-machines/data-science-virtual-machines/)
 * This file is helpful: [`utils.py`](utils.py)
+* Use `Python [conda env:AzureML]` as the Notebook type in Jupyer
 * We'll be using `scikit-learn` to build a simple `LogisticRegression` classifier
 * Target accuracy of our model on the test data set: `>90%`
 
@@ -39,7 +40,7 @@ In this challenge, you'll be training a more advanced machine learning model on 
 
 Guidance:
 * Make a copy of the Notebook from Challenge 1
-* This time we'll be using `Keras` with a TensorFlow backend to train a Convolution Neural Network
+* This time we'll be using `Keras` with a TensorFlow backend to train a Convolution Neural Network on Azure Batch AI
 * Target accuracy of our model on the test data set: `>99%`
 
 ## Challenge 3 - Model deployment on Azure
@@ -60,7 +61,7 @@ Here are some **[hints](hints/challenge_04.md)** for this challenge!
 In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which machine learning algorithm performs best on our dataset.
 
 Guidance:
-* Create a new Azure Notebook
+* Create a new Jupyter Notebook
 * Take the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset)
 * Leverage [Automated Machine Learning](https://docs.microsoft.com/en-us/azure/machine-learning/service/tutorial-auto-train-models) to automatically finding the best-performing regression model for predicting house prices
 

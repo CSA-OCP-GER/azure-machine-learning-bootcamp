@@ -1,6 +1,8 @@
 # Hints for Challenge 2
 
-Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Azure Notebook, we'll be using [Azure Batch AI](https://azure.microsoft.com/en-us/services/batch-ai/) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
+Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Notebook, we'll be using [Azure Batch AI](https://azure.microsoft.com/en-us/services/batch-ai/) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
+
+**Note:** Obviously we do not need Azure Batch AI for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Batch AI In this challenge. 
 
 First, let's create a new notebook `challenge02.ipynb` for this challenge.
 
@@ -65,7 +67,7 @@ try:
         print('{} exists but it is not a Batch AI cluster. Please choose a different name.'.format(batchai_cluster_name))
 except ComputeTargetException:
     print('creating a new compute target...')
-    compute_config = BatchAiCompute.provisioning_configuration(vm_size="STANDARD_D2_V2", # small CPU-based VM
+    compute_config = BatchAiCompute.provisioning_configuration(vm_size="STANDARD_D4_V2", # small CPU-based VM
                                                                #location='eastus', # use eastus location if you are using a free or Pay-as-you-go subscription!
                                                                #vm_priority='lowpriority', # optional
                                                                autoscale_enabled=True,
@@ -80,7 +82,7 @@ except ComputeTargetException:
     print(compute_target.status.serialize())
 ```
 
-Here we can configure our cluster size, the initial VM count, autoscaling, and most importantly, the VM Size. In our example, we'll stick with a small VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance.
+Here we can configure our cluster size, the initial VM count, autoscaling, and most importantly, the VM Size. In our example, we'll stick with a smaller VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. Provisioning the initial cluster should take around 3-05 minutes.
 
 If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Batch AI cluster:
 
@@ -88,7 +90,7 @@ If we now look under the `Compute` tab in our Azure ML Workspace, we can see our
 
 The cluster VMs will take a few minutes to spin up.
 
-In the last challenge, we had all our code in our Azure Notebook. Since we're training remotely now, our Batch AI cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
+In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Batch AI cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
 
 ```python
 import os, shutil
@@ -186,10 +188,15 @@ test_score = model.evaluate(x_test, y_test, verbose=0)
 accuracy = np.float(test_score[1])
 print('Accuracy is', accuracy)
 
-# Log accuracy to our Azure ML Workspace
+# Log accuracy and run details to our Azure ML Workspace
 run.log('Test Accuracy', accuracy)
-run.log_list("Train Accuracy", train_score.history['acc'])
-run.log_list("Train Loss", train_score.history['loss'])
+run.log_list('Train Accuracy', train_score.history['acc'])
+run.log_list('Train Loss', train_score.history['loss'])
+run.log('Batch Size', batch_size)
+run.log('Epochs', epochs)
+
+# Azure ML expects a field called 'accuracy' for displaying it in the Azure portal
+run.log('accuracy', accuracy)
 
 # Save model, the outputs folder is automatically uploaded into experiment record by Batch AI
 os.makedirs('outputs', exist_ok=True)
@@ -250,14 +257,14 @@ The initial run will take a while, here's why:
 
 In the background, Azure ML will now perform the following steps:
 
-* Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take ~10 minutes)
+* Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes)
 * Scale up the Batch AI cluster (if initial size was 0)
 * Pull the Docker image to the Batch AI cluster
 * Mount the MNIST data from Azure Files to the Batch AI cluster (for fast local access)
 * Start the training job
 * Publish the results to our Workspace (same as before)
 
-The first run might take 10-25 minutes. Subsequent runs will be significantly faster as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
+The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
 
 In the Batch AI Experiments section, we can see our run:
 
