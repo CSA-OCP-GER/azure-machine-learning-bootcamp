@@ -73,6 +73,7 @@ There's a lot more interesting stuff that Azure Machine Learning can do for us. 
 
 * Secure our model endpoint on ACI with an authentication key (use `auth_enabled` and [see here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-consume-web-service#connection-information))
 * Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
+* Distributed training in [TensorFlow](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-tensorflow#distributed-training) or [PyTorch](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-pytorch#distributed-training)
 
 # Recommended Trainings
 * [Microsoft Professional Program for Artificial Intelligence track](https://academy.microsoft.com/en-us/tracks/artificial-intelligence) - extremely in-depth and very extensive training (includes a lot of mandatory hands-on)

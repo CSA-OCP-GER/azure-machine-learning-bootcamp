@@ -1,6 +1,6 @@
 # Hints for Challenge 4
 
-By now, we have a good understanding how Azure Machine Learning works. In this last challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically.
+By now, we have a good understanding how Azure Machine Learning works. In this last challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically. Automated Machine Learning is currently able to perform `classification`, `regression` and also `forecasting`.
 
 For this challenge, we'll be using the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset).
 
@@ -46,7 +46,7 @@ Now, we need to configure our Automated Machine Learning project:
 
 ```python
 automl_config = AutoMLConfig(task = 'regression',
-                             max_time_sec = 120,
+                             iteration_timeout_minutes = 2,
                              iterations = 10,
                              primary_metric = 'normalized_root_mean_squared_error',
                              n_cross_validations = 5,
@@ -61,7 +61,7 @@ This is the most interesting part:
 
 * `task` - Type of problem (classification or regression)
 * `primary_metric` - The metric that we want to optimize
-* `max_time_sec` - Time limit per iteration
+* `iteration_timeout_minutes` - Time limit per iteration
 * `iterations` - Number of iterations (number of algorithms tested)
 * `n_cross_validations` - Number of cross validation splits
 * `X` - Training data
@@ -76,14 +76,9 @@ Let's run it locally in our Notebook, as the data isn't too big (depending on th
 local_run = experiment.submit(automl_config, show_output = True)
 ```
 
-We can summarize the results graphically:
+![alt text](../images/04-test_iterations.png "Test iterations")
 
-```python
-from azureml.train.widgets import RunDetails
-RunDetails(local_run).show()
-```
-
-And also retrieve the best performing model:
+Once done, we can retrieve the best performing model:
 
 ```python
 best_run, fitted_model = local_run.get_output()
@@ -102,3 +97,4 @@ At this point:
 * We took the `Boston house prices dataset` and split it up into a train and test set (we haven't used the test set in our code though!)
 * We let Automated Machine Learning evaluate 10 algorithms to predict the house prices in Boston
 * We picked the best performing model
+* There are a [lot more possibilities](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-configure-auto-train) with Automated Machine Learning, especially `Forecasting` is also supported
