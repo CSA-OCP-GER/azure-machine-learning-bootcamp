@@ -14,7 +14,7 @@ Our Azure Subscription must first have the providers for Azure Container Instanc
 
 The leading `!` tells the notebook cell to execute the code on the command line inside the Jupyter Notebook's VM.
 
-As before, let's connect to our Workspace (not really needed, as we're still in the same notebook):
+As before, let's import all necessary libraries and connect to our Workspace (we're probably already connected, but better safe than sorry):
 
 ```python
 from azureml.core import Workspace, Experiment, Run
@@ -60,7 +60,7 @@ def run(raw_data):
     return json.dumps({"prediction": int(np.argmax(y)), "probabilities": y.tolist()})
 ```
 
-We also need to tell Azure ML which dependencies our packaged model has (similar to when we used Azure Batch AI):
+We also need to tell Azure ML which dependencies our packaged model has (similar to when we used Azure Machine Learning Compute):
 
 ```python
 from azureml.core.conda_dependencies import CondaDependencies 
@@ -69,6 +69,7 @@ myenv = CondaDependencies()
 myenv.add_pip_package("pynacl==1.2.1")
 myenv.add_pip_package("keras==2.2.4")
 myenv.add_pip_package("tensorflow==1.11.0")
+myenv.add_pip_package("pillow==5.3.0")
 
 with open("keras-tf-mnist.yml","w") as f:
     f.write(myenv.serialize_to_string())
@@ -150,4 +151,4 @@ At this point:
 * We put our high-accuracy model and deploy it on Azure Container Instances as a web service
 * We can do a simple RESTful API call to our endpoint for scoring a 28x28 pixel sized image
 
-Often, we have simpler data set and want to figure out how we can best classify or predict certain data points - without trying out a lot of Machine Learning algorithms ourselves. Hence, we'll look at Automated Machine Learning in the [last challenge](challenge_04.md).
+Often, we have a simpler data set and want to figure out how we can best classify or predict certain data points - without trying out a lot of Machine Learning algorithms ourselves. Hence, we'll look at Automated Machine Learning in the [last challenge](challenge_04.md).
