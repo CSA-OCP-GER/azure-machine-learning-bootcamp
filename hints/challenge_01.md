@@ -2,11 +2,11 @@
 
 ## Setup part
 
-In the Azure Portal, create a new `Machine Learning service workspace (preview)` Service:
+In the Azure Portal, create a new `Machine Learning service workspace` resource:
 
 * Workspace name: `azure-ml-bootcamp`
 * Resource Group: `azure-ml-bootcamp`
-* Location: `East US` (`West Europe` does not support `Azure Batch AI` with the `Free Trial` Subscription)
+* Location: `East US` (FIXME `West Europe` does not support `Azure Batch AI` with the `Free Trial` Subscription)
 
 ![alt text](../images/01-create_workspace.png "Create Machine Learning Workspace")
 
@@ -15,7 +15,7 @@ Let's have a look at our Resource Group:
 ![alt text](../images/01-resource_group.png "Our resource group")
 
 * Application Insights - used for monitoring our models in production
-* Storage account - this will store our logs, model outputs, etc.
+* Storage account - this will store our logs, model outputs, training/testing data, etc.
 * Key vault - stores our secrets
 * Container registry - stores our containerized models
 * Machine Learning service workspace - the centre point for Machine Learning on Azure
@@ -26,9 +26,15 @@ First, create a new `Data Science Virtual Machine - Windows 2016`:
 
 ![alt text](../images/01-create_dsvm.png "Data Science Virtual Machine")
 
+In case you see two versions, pick the one with the following description:
+
+![alt text](../images/01-correct_dsvm.png "Data Science Virtual Machine")
+
 We can keep all the defaults, we just need to make sure that it is also in `East US`:
 
 ![alt text](../images/01-create_dsvm2.png "Data Science Virtual Machine")
+
+(Configuration of auto-shutdown might also be a good idea - just in case...)
 
 In a real-world setup, we would probably want to use a GPU-enabled instance, but for today we'll keep it simple (...and less expensive). Once the VM has started, connect to it via `RDP`.
 
@@ -36,7 +42,7 @@ Next, we'll start up our Jupyter Notebooks on the VM, we'll find the icon straig
 
 ![alt text](../images/01-jupyter_icon.png "Jupyter")
 
-In command line, we can find the URL and the initial token for authentication. With the browser of your choice, open the address printed on the command line on log in.
+In command line, we can find the URL and the initial token for authentication. With the browser of your choice, open the address printed on the command line on log in. In some cases, IE opens automatically and will directly bring you into Jupyter.
 
 ![alt text](../images/01-jupyter_starting.png "Jupyter Command Line")
 
@@ -137,7 +143,7 @@ run.log('accuracy', acc)
 run.complete()
 ```
 
-On a `DS3 v2 (4 vcpus, 14 GB memory)` instance, the code should take around 1-2 minutes to run.
+On a `Ds3 v2 (4 vcpus, 14 GB memory)` instance, the code should take around 1-2 minutes to run.
 
 In summary, the code does the following things:
 
@@ -181,7 +187,7 @@ In the portal, we can see the output of our run:
 
 ![alt text](../images/01-run_model.png "Our model output in our ML Workspace")
 
-We can also query the metrics and outputs for our run:
+We can also query our logged metrics and outputs for our current run:
 
 ```python
 print("Run metrics:", run.get_metrics())

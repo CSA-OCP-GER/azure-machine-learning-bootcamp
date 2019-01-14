@@ -1,4 +1,6 @@
-# Azure Machine Learning Bootcamp Materials (Version 1.1)
+# Azure Machine Learning Bootcamp Materials (Version 1.2)
+
+Azure Machine Learning is now [general available](https://azure.microsoft.com/en-us/blog/azure-machine-learning-service-a-look-under-the-hood/).
 
 Here are the top two resources you'll need this afternoon:
 
@@ -25,7 +27,7 @@ The goal is to build a machine learning model, that
 * outputs if there was a 0, 1, 2, 3, 4, 5, 6, 7, 8 or 9 on the image
 
 Guidance:
-* Deploy from Azure Portal: `Machine Learning service workspace (preview)`
+* Deploy from Azure Portal: `Machine Learning service workspace`
 * We'll be writing our code in a Jupyter Notebook in a [DSVM (Data Science Virtual Machine)](https://azure.microsoft.com/en-us/services/virtual-machines/data-science-virtual-machines/)
 * This file is helpful: [`utils.py`](utils.py)
 * Use `Python [conda env:AzureML]` as the Notebook type in Jupyer
@@ -36,7 +38,7 @@ Guidance:
 
 Here are some **[hints](hints/challenge_02.md)** for this challenge!
 
-In this challenge, you'll be training a more advanced machine learning model on Azure (in fact, you'll be training a Convolution Neural Network). We'll be using the same data set, but this time, we'll use Azure Batch AI for speeding up our training.
+In this challenge, you'll be training a more advanced machine learning model on Azure (in fact, you'll be training a Deep Convolution Neural Network). We'll be using the same data set, but this time, we'll use Azure Machine Learning Compute for speeding up our training.
 
 Guidance:
 * Make a copy of the Notebook from Challenge 1
