@@ -1,8 +1,8 @@
 # Hints for Challenge 2
 
-Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Notebook, we'll be using [Azure Batch AI](https://azure.microsoft.com/en-us/services/batch-ai/) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
+Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Notebook, we'll be using [Azure Machine Learning Compute](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-set-up-training-targets) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
 
-**Note:** Obviously we do not need Azure Batch AI for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Batch AI In this challenge. 
+**Note:** Obviously we do not need Azure Machine Learning Compute for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Machine Learning Compute In this challenge. 
 
 First, let's create a new notebook `challenge02.ipynb` for this challenge.
 
@@ -29,7 +29,7 @@ urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ub
 urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', filename='./data/test-labels.gz')
 ```
 
-In this challenge, we'll be training remotely. Therefore, we'll need to access the MNIST dataset inside our Batch AI cluster.
+In this challenge, we'll be training remotely. Therefore, we'll need to access the MNIST dataset inside our Azure Machine Learning Compute cluster.
 
 To do so, we'll upload it to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Files) and upload the four files from MNIST into the `./mnist` folder:
 
@@ -37,7 +37,9 @@ To do so, we'll upload it to the default datastore that our Azure ML Workspace p
 ds = ws.get_default_datastore()
 
 print("Datastore details:")
-print(ds.datastore_type, ds.account_name, ds.container_name)
+print("Type:", ds.datastore_type)
+print("Storage Account:", ds.account_name)
+print("Share Name:", ds.container_name)
 
 ds.upload(src_dir='./data', target_path='mnist', overwrite=True, show_progress=True)
 ```
@@ -46,51 +48,53 @@ If we go to the default Storage Account that the Azure ML Workspace created for 
 
 ![alt text](../images/02-dataset_in_azure_files.png "MNIST dataset in Azure Files")
 
-Next, we can create an empty Batch AI cluster in Azure:
+Next, we can create an `Azure Machine Learning Compute` cluster in Azure:
 
 ***Note:***
-If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, you might need to create the Batch AI cluster in the `eastus` region, as `westeurope` is not enabled by default. To do so, just uncomment the `#location='eastus',` line. 
+If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default). To do so, add a `location='eastus'` parameter in the `AmlCompute.provisioning_configuration` line. 
 
 ```python
-from azureml.core.compute import ComputeTarget, BatchAiCompute
-from azureml.core.compute_target import ComputeTargetException
+from azureml.core.compute import AmlCompute
+from azureml.core.compute import ComputeTarget
+import os
 
-# choose a name for your cluster
-batchai_cluster_name = "traincluster"
+# Configure our cluster details
+compute_name = "cpucluster"
+compute_min_nodes = 1
+compute_max_nodes = 1
+vm_size = "STANDARD_D4_V2"
 
-try:
-    # look for the existing cluster by name
-    compute_target = ComputeTarget(workspace=ws, name=batchai_cluster_name)
-    if type(compute_target) is BatchAiCompute:
-        print('found compute target {}, just use it.'.format(batchai_cluster_name))
-    else:
-        print('{} exists but it is not a Batch AI cluster. Please choose a different name.'.format(batchai_cluster_name))
-except ComputeTargetException:
-    print('creating a new compute target...')
-    compute_config = BatchAiCompute.provisioning_configuration(vm_size="STANDARD_D4_V2", # small CPU-based VM
-                                                               #location='eastus', # use eastus location if you are using a free or Pay-as-you-go subscription!
-                                                               #vm_priority='lowpriority', # optional
-                                                               autoscale_enabled=True,
-                                                               cluster_min_nodes=1, 
-                                                               cluster_max_nodes=1)
+# Check if a cluster with the same name already exists
+if compute_name in ws.compute_targets:
+    compute_target = ws.compute_targets[compute_name]
+    if compute_target and type(compute_target) is AmlCompute:
+        print("Found compute target, let's just reuse it:", compute_name)
+else:
+    print('Creating a new compute target...')
+    provisioning_config = AmlCompute.provisioning_configuration(vm_size = vm_size,
+                                                                min_nodes = compute_min_nodes,
+                                                                max_nodes = compute_max_nodes)
 
-    # create the cluster and wait until it has been provisioned
-    compute_target = ComputeTarget.create(ws, batchai_cluster_name, compute_config)
+    # Create the cluster
+    compute_target = ComputeTarget.create(ws, compute_name, provisioning_config)
+    
+    # We can poll for a minimum number of nodes and for a specific timeout. 
+    # If no min node count is provided it will use the scale settings for the cluster
     compute_target.wait_for_completion(show_output=True, min_node_count=None, timeout_in_minutes=20)
     
-    # Get the status of our cluster
+     # For a more detailed view of current AmlCompute status, use the 'status' property    
     print(compute_target.status.serialize())
 ```
 
-Here we can configure our cluster size, the initial VM count, autoscaling, and most importantly, the VM Size. In our example, we'll stick with a smaller VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. Provisioning the initial cluster should take around 3-05 minutes.
+Here we can configure our minimum and maximum cluster size, and most importantly, the VM Size. In our example, we'll stick with a smaller VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. Provisioning the initial cluster should take around 3-5 minutes. More details on further configuration parameters can be found [here](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.compute.amlcompute(class)?view=azure-ml-py#provisioning-configuration-vm-size-----vm-priority--dedicated---min-nodes-0--max-nodes-none--idle-seconds-before-scaledown-none--vnet-resourcegroup-name-none--vnet-name-none--subnet-name-none--tags-none--description-none-), as for example `idle_seconds_before_scaledown`, which defines when the cluster should auto-scale down.
 
-If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Batch AI cluster:
+If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Azure Machine Learning Compute cluster:
 
-![alt text](../images/02-create_cluster.png "Create our Batch AI cluster for training")
+![alt text](../images/02-create_cluster.png "Create our Machine Learning Compute cluster for training")
 
 The cluster VMs will take a few minutes to spin up.
 
-In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Batch AI cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
+In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
 
 ```python
 import os, shutil
@@ -198,7 +202,7 @@ run.log('Epochs', epochs)
 # Azure ML expects a field called 'accuracy' for displaying it in the Azure portal
 run.log('accuracy', accuracy)
 
-# Save model, the outputs folder is automatically uploaded into experiment record by Batch AI
+# Save model, the outputs folder is automatically uploaded into experiment record by Azure Machine Learning Compute
 os.makedirs('outputs', exist_ok=True)
 model.save('./outputs/keras-tf-mnist.h5')
 ```
@@ -213,9 +217,9 @@ This looks a little bit more complex than our last example! Let's walk through w
 1. We let Keras assemble and train the model
 1. We run our test data through it and get the predictions
 1. We log the train and test accuracies to our experiment
-1. We save the model to the `outputs/` folder (Batch AI will automatically upload that folder to the experiment afterwards)
+1. We save the model to the `outputs/` folder (Azure Machine Learning Compute will automatically upload that folder to the experiment afterwards)
 
-To get the training working, we need to package the scripts and "send" them to Batch AI. Azure ML uses the `Estimator` class for that:
+To get the training working, we need to package the scripts and "send" them to Azure Machine Learning Compute. Azure ML uses the `Estimator` class for that:
 
 ```python
 from azureml.train.estimator import Estimator
@@ -235,7 +239,7 @@ est = Estimator(source_directory=script_folder,
                 conda_packages=['keras'])
 ```
 
-As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script parameters, for trying out different hyperparameters (not covered here).
+As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script parameters, for [(automatically) trying out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) (not covered here).
 
 **Note**: There is also a separate `TensorFlow` Estimator for just TensorFlow, see [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-tensorflow). Since we want to keep it generic in this challenge, we'll rely on the standard `Estimator`.
 
@@ -246,31 +250,24 @@ run = experiment.submit(config=est)
 run
 ```
 
-Submitting the job is an asynchronous call, hence we'll have to keep checking the status (the widget will auto-refresh):
+We are be able to see what is going on by logging into the Azure Portal, selecting our `ML Workspace`, clicking `Experiment`, picking the latest `Run`, clicking `Logs` and then picking the desired log file.
 
-```python
-from azureml.train.widgets import RunDetails
-RunDetails(run).show()
-```
+Under the `Compute` tab, we can also see that our cluster is now training the model:
 
-**Note**: The widget current only seems to work in Chrome and Edge.
+![alt text](../images/02-running_training.png "Our trainig is running")
 
 The initial run will take a while, here's why:
 
 In the background, Azure ML will now perform the following steps:
 
 * Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes)
-* Scale up the Batch AI cluster (if initial size was 0)
-* Pull the Docker image to the Batch AI cluster
-* Mount the MNIST data from Azure Files to the Batch AI cluster (for fast local access)
+* Scale up the Azure Machine Learning Compute cluster (only if initial size was 0)
+* Pull the Docker image to the Azure Machine Learning Compute cluster
+* Mount the MNIST data from Azure Files to the Azure Machine Learning Compute cluster (for fast local access)
 * Start the training job
 * Publish the results to our Workspace (same as before)
 
 The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
-
-In the Batch AI Experiments section, we can see our run:
-
-![alt text](../images/02-batch_ai_experiment.png "Batch AI Experiment run")
 
 With the same code as before (this is the strength of Azure ML), we can retrieve the results of our training run:
 
@@ -292,7 +289,7 @@ model = run.register_model(model_name='keras-tf-mnist-model', model_path='output
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-If we want, we can also delete our Batch AI cluster (we won't need it in the next challenges):
+If we want, we can also delete our Azure Machine Learning Compute cluster (we won't need it in the next challenges):
 
 ```python
 compute_target.delete()
@@ -300,7 +297,7 @@ compute_target.delete()
 
 At this point (in addition to the results from challenge 1):
 
-* We used the Azure Machine Learning SDK with Azure Batch AI in the background to train a Convolutional Neural Network (CNN)
+* We used the Azure Machine Learning SDK with Azure Machine Learning Compute in the background to train a Convolutional Neural Network (CNN)
 * We switched our training framework from Scikit-Learn to Keras with TensorFlow in the backend (without changing any Azure ML code!)
 * We registered our new model (>`99%` accuracy) in our Azure ML Workspace
 
