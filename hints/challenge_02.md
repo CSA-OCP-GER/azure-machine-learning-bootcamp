@@ -236,6 +236,7 @@ est = Estimator(source_directory=script_folder,
                 script_params=script_params,
                 compute_target=compute_target,
                 entry_script='train.py',
+                pip_packages=['PyYAML==3.13'],
                 conda_packages=['keras'])
 ```
 

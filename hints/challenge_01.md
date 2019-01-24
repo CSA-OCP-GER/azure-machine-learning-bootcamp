@@ -38,6 +38,15 @@ We can keep all the defaults, we just need to make sure that it is also in `East
 
 In a real-world setup, we would probably want to use a GPU-enabled instance, but for today we'll keep it simple (...and less expensive). Once the VM has started, connect to it via `RDP`.
 
+First, open up a command shell (`cmd.exe`) and quickly update the Azure Machine Learning SDK to the latest version:
+
+```
+conda activate AzureML
+pip install --upgrade azureml-sdk[notebooks,automl] azureml-dataprep
+```
+
+The Data Science VM is usually up-to-date, but since the Azure Machine Learning SDK is moving forward quickly, let's make sure we run the latest version.
+
 Next, we'll start up our Jupyter Notebooks on the VM, we'll find the icon straight on the desktop:
 
 ![alt text](../images/01-jupyter_icon.png "Jupyter")
