@@ -6,7 +6,7 @@ In the Azure Portal, create a new `Machine Learning service workspace` resource:
 
 * Workspace name: `azure-ml-bootcamp`
 * Resource Group: `azure-ml-bootcamp`
-* Location: `East US` (FIXME `West Europe` does not support `Azure Batch AI` with the `Free Trial` Subscription)
+* Location: `East US` (`West Europe` does not always work with the `Free Trial` subscription)
 
 ![alt text](../images/01-create_workspace.png "Create Machine Learning Workspace")
 
