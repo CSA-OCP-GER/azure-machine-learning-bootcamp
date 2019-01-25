@@ -44,9 +44,9 @@ print("Share Name:", ds.container_name)
 ds.upload(src_dir='./data', target_path='mnist', overwrite=True, show_progress=True)
 ```
 
-If we go to the default Storage Account that the Azure ML Workspace created for us, then select Azure Files, we can see that the dataset has been uploaded:
+If we go to the default Storage Account that the Azure ML Workspace created for us, then select Azure Blob, we can see that the dataset has been uploaded:
 
-![alt text](../images/02-dataset_in_azure_files.png "MNIST dataset in Azure Files")
+![alt text](../images/02-dataset_in_azure_blob.png "MNIST dataset in Azure Blob")
 
 Next, we can create an `Azure Machine Learning Compute` cluster in Azure:
 
@@ -229,7 +229,7 @@ ds = ws.get_default_datastore()
 script_params = {
     '--data-folder': ds.as_mount(),
     '--batch-size': 128,
-    '--epochs': 10
+    '--epochs': 8
 }
 
 est = Estimator(source_directory=script_folder,
