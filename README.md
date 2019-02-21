@@ -1,4 +1,4 @@
-# Azure Machine Learning Bootcamp Materials (Version 1.2)
+# Azure Machine Learning Bootcamp Materials (Version 1.3)
 
 Azure Machine Learning is now [general available](https://azure.microsoft.com/en-us/blog/azure-machine-learning-service-a-look-under-the-hood/).
 

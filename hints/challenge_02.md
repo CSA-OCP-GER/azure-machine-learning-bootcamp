@@ -31,7 +31,7 @@ urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ub
 
 In this challenge, we'll be training remotely. Therefore, we'll need to access the MNIST dataset inside our Azure Machine Learning Compute cluster.
 
-To do so, we'll upload it to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Files) and upload the four files from MNIST into the `./mnist` folder:
+To do so, we'll upload it to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Blob) and upload the four files from MNIST into the `./mnist` folder:
 
 ```python
 ds = ws.get_default_datastore()
@@ -51,7 +51,7 @@ If we go to the default Storage Account that the Azure ML Workspace created for 
 Next, we can create an `Azure Machine Learning Compute` cluster in Azure:
 
 ***Note:***
-If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default). To do so, add a `location='eastus'` parameter in the `AmlCompute.provisioning_configuration` line. 
+If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default). To do so, add a `location='eastus'` parameter in the `AmlCompute.provisioning_configuration` line (not needed if you have your workspace running in `eastus`). 
 
 ```python
 from azureml.core.compute import AmlCompute
@@ -71,12 +71,12 @@ if compute_name in ws.compute_targets:
         print("Found compute target, let's just reuse it:", compute_name)
 else:
     print('Creating a new compute target...')
-    provisioning_config = AmlCompute.provisioning_configuration(vm_size = vm_size,
-                                                                min_nodes = compute_min_nodes,
-                                                                max_nodes = compute_max_nodes)
+    compute_config = AmlCompute.provisioning_configuration(vm_size = vm_size,
+                                                           min_nodes = compute_min_nodes,
+                                                           max_nodes = compute_max_nodes)
 
     # Create the cluster
-    compute_target = ComputeTarget.create(ws, compute_name, provisioning_config)
+    compute_target = ComputeTarget.create(ws, compute_name, compute_config)
     
     # We can poll for a minimum number of nodes and for a specific timeout. 
     # If no min node count is provided it will use the scale settings for the cluster
@@ -92,7 +92,7 @@ If we now look under the `Compute` tab in our Azure ML Workspace, we can see our
 
 ![alt text](../images/02-create_cluster.png "Create our Machine Learning Compute cluster for training")
 
-The cluster VMs will take a few minutes to spin up.
+The cluster VM(s) will take a few minutes to spin up.
 
 In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
 
@@ -240,7 +240,7 @@ est = Estimator(source_directory=script_folder,
                 conda_packages=['keras'])
 ```
 
-As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script parameters, for [(automatically) trying out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) (not covered here).
+As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script some static parameters, but ideally we would [automatically try out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) to get superior accuracy (not covered here).
 
 **Note**: There is also a separate `TensorFlow` Estimator for just TensorFlow, see [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-tensorflow). Since we want to keep it generic in this challenge, we'll rely on the standard `Estimator`.
 
@@ -259,14 +259,14 @@ Under the `Compute` tab, we can also see that our cluster is now training the mo
 
 The initial run will take a while, here's why:
 
-In the background, Azure ML will now perform the following steps:
+In the background, Azure ML Services will now perform the following steps:
 
-* Package our scripts as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes)
+* Package our scripts and dependencies as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes)
 * Scale up the Azure Machine Learning Compute cluster (only if initial size was 0)
 * Pull the Docker image to the Azure Machine Learning Compute cluster
-* Mount the MNIST data from Azure Files to the Azure Machine Learning Compute cluster (for fast local access)
+* Mount the MNIST data from Azure Blob to the Azure Machine Learning Compute cluster
 * Start the training job
-* Publish the results to our Workspace (same as before)
+* Publish the results to our Workspace (same as in challenge)
 
 The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
 
@@ -299,7 +299,7 @@ compute_target.delete()
 At this point (in addition to the results from challenge 1):
 
 * We used the Azure Machine Learning SDK with Azure Machine Learning Compute in the background to train a Convolutional Neural Network (CNN)
-* We switched our training framework from Scikit-Learn to Keras with TensorFlow in the backend (without changing any Azure ML code!)
+* We switched our training framework from Scikit-Learn to Keras with TensorFlow in the backend (without changing any Azure ML SDK code!)
 * We registered our new model (>`99%` accuracy) in our Azure ML Workspace
 
 Great, now we have a well performing model. Obviously, we want other people, maybe some developers, make use of it. Therefore, we'll deploy it as an API to production in the [next challenge](challenge_03.md).
