@@ -122,6 +122,32 @@ from keras import backend as K
 
 from azureml.core import Run
 from utils import load_data
+from sklearn.metrics import roc_auc_score
+
+# Helper class for real-time logging
+class CheckpointCallback(keras.callbacks.Callback):
+    def __init__(self, run):
+        self.run = run
+
+    def on_train_begin(self, logs={}):
+        return
+
+    def on_train_end(self, logs={}):
+        return
+
+    def on_epoch_begin(self, epoch, logs={}):
+        return
+
+    def on_epoch_end(self, epoch, logs={}):
+        run.log('Training accuracy', logs.get('acc'))
+        run.log('Training loss', logs.get('loss'))
+        return
+
+    def on_batch_begin(self, batch, logs={}):
+        return
+
+    def on_batch_end(self, batch, logs={}):
+        return
 
 # input image dimensions and number of classes
 img_rows, img_cols = 28, 28
@@ -182,41 +208,38 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy'])
 
+# Train our model and use callback to log every epoch to AML
+checkpoints = CheckpointCallback(run)
 train_score = model.fit(x_train, y_train,
                         batch_size=batch_size,
                         epochs=epochs,
                         verbose=1,
-                        validation_data=(x_test, y_test))
+                        validation_data=(x_test, y_test),
+                        callbacks=[checkpoints])
+
 test_score = model.evaluate(x_test, y_test, verbose=0)
 
-accuracy = np.float(test_score[1])
-print('Accuracy is', accuracy)
-
 # Log accuracy and run details to our Azure ML Workspace
-run.log('Test Accuracy', accuracy)
-run.log_list('Train Accuracy', train_score.history['acc'])
-run.log_list('Train Loss', train_score.history['loss'])
+run.log('Test Accuracy', np.float(test_score[1]))
 run.log('Batch Size', batch_size)
 run.log('Epochs', epochs)
 
-# Azure ML expects a field called 'accuracy' for displaying it in the Azure portal
-run.log('accuracy', accuracy)
-
-# Save model, the outputs folder is automatically uploaded into experiment record by Azure Machine Learning Compute
+# Save model, the outputs folder is automatically uploaded into experiment record by AML Compute
 os.makedirs('outputs', exist_ok=True)
 model.save('./outputs/keras-tf-mnist.h5')
 ```
 
 This looks a little bit more complex than our last example! Let's walk through what this script does:
 
+1. We define a custom callback class for logging the results of each epoch into our Azure Machine Learning workspace
 1. We define the input parameters for the script (data folder, batch size, and number of training epochs)
-1. We load the data from our Azure Files share
+1. We load the data from our Azure Blob share
 1. We transform the data to the format that `Keras` expects
 1. We get hold of the current run (`Run.get_submitted_run()`) - the SDK will manage the run this time
 1. We build a Convolution Neural Network with two convolutional layers with ReLu as the activation function, followed by a dense 128 neuron large fully connected layer
-1. We let Keras assemble and train the model
+1. We let `Keras` assemble and train the model
 1. We run our test data through it and get the predictions
-1. We log the train and test accuracies to our experiment
+1. We log the final train and test accuracies to our experiment
 1. We save the model to the `outputs/` folder (Azure Machine Learning Compute will automatically upload that folder to the experiment afterwards)
 
 To get the training working, we need to package the scripts and "send" them to Azure Machine Learning Compute. Azure ML uses the `Estimator` class for that:
@@ -237,7 +260,7 @@ est = Estimator(source_directory=script_folder,
                 compute_target=compute_target,
                 entry_script='train.py',
                 pip_packages=['PyYAML==3.13'],
-                conda_packages=['keras'])
+                conda_packages=['keras', 'scikit-learn'])
 ```
 
 As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script some static parameters, but ideally we would [automatically try out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) to get superior accuracy (not covered here).
