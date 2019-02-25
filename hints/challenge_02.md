@@ -122,7 +122,6 @@ from keras import backend as K
 
 from azureml.core import Run
 from utils import load_data
-from sklearn.metrics import roc_auc_score
 
 # Helper class for real-time logging
 class CheckpointCallback(keras.callbacks.Callback):
@@ -260,7 +259,7 @@ est = Estimator(source_directory=script_folder,
                 compute_target=compute_target,
                 entry_script='train.py',
                 pip_packages=['PyYAML==3.13'],
-                conda_packages=['keras', 'scikit-learn'])
+                conda_packages=['keras'])
 ```
 
 As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script some static parameters, but ideally we would [automatically try out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) to get superior accuracy (not covered here).
