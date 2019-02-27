@@ -138,8 +138,8 @@ class CheckpointCallback(keras.callbacks.Callback):
         return
 
     def on_epoch_end(self, epoch, logs={}):
-        run.log('Training accuracy', logs.get('acc'))
-        run.log('Training loss', logs.get('loss'))
+        self.run.log('Training accuracy', logs.get('acc'))
+        self.run.log('Training loss', logs.get('loss'))
         return
 
     def on_batch_begin(self, batch, logs={}):
