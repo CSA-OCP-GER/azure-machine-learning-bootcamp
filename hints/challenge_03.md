@@ -5,7 +5,7 @@ Hence, we'll now be taking the model and we'll deploy it on [Azure Container Ins
 
 **We'll reuse the same notebook as in challenge 2, as it will have the container images cached.**
 
-Our Azure Subscription must first have the providers for Azure Container Instances enabled:
+Our Azure Subscription must first have the resource providers for Azure Container Instances enabled (in many cases, this is probably already enabled in your subscription):
 
 ```python
 !az provider show -n Microsoft.ContainerInstance -o table

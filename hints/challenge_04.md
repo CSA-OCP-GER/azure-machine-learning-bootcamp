@@ -105,7 +105,7 @@ print("Model MAPE", mean_abs_percent_error)
 print("Model Accuracy", 1 - mean_abs_percent_error)
 ```
 
-From here, we can have a look at the [following examples](https://github.com/Azure/MachineLearningNotebooks/tree/master/how-to-use-azureml/automated-machine-learning) to see how we can save and deploy the model.
+From here, we can have a look at the [following examples](https://github.com/Azure/MachineLearningNotebooks/tree/master/how-to-use-azureml/automated-machine-learning) to see how we can save and [deploy the model](https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/automated-machine-learning/classification-with-deployment/auto-ml-classification-with-deployment.ipynb).
 
 At this point:
 
