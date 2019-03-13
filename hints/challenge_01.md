@@ -59,7 +59,9 @@ In command line, we can find the URL and the initial token for authentication. W
 
 # Initial Azure Machine Learning Setup
 
-Inside the newly created Jupyter instance, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder. Next, create a text file called `config.json` (also via the `New` button) and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):
+Inside the newly created Jupyter instance, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder.
+
+Next, create a text file called `config.json` (also via the `New` button) and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):
 
 ```json
 {

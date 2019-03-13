@@ -39,7 +39,7 @@ ds = ws.get_default_datastore()
 print("Datastore details:")
 print("Type:", ds.datastore_type)
 print("Storage Account:", ds.account_name)
-print("Share Name:", ds.container_name)
+print("Blob Container Name:", ds.container_name)
 
 ds.upload(src_dir='./data', target_path='mnist', overwrite=True, show_progress=True)
 ```
