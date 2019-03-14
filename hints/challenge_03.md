@@ -1,6 +1,6 @@
 # Hints for Challenge 3
 
-After challenge 2, we finally have a model that an accuracy of more than 99% - time to deploy it to production!
+After challenge 2, we finally have a model that has an accuracy of more than 99% - time to deploy it to production!
 Hence, we'll now be taking the model and we'll deploy it on [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/).
 
 **We'll reuse the same notebook as in challenge 2, as it will have the container images cached.**

@@ -107,7 +107,7 @@ Next, let's create a new experiment (this will later show up in our ML Workspace
 experiment = Experiment(workspace = ws, name = "scikit-learn-mnist")
 ```
 
-Let's load some test data into our notebook. In a later challenge, we'll use Azure Batch AI to train a more powerful model, but for now, we'll train a model with the CPU of the VM that is running our notebook:
+Let's load some test data into our notebook. In a later challenge, we'll use a Azure Machine Learning Compute cluster to train a more powerful model, but for now, we'll train a model with the CPU of the VM that is running our notebook:
 
 ```python
 import os
@@ -230,4 +230,4 @@ At this point:
 * Azure ML has the output files of our trained model in Blob storage
 * We have registered our initial model as a Azure ML Model in our Workspace
 
-In the [next challenge](challenge_02.md), we'll build a more powerful model and use Azure Batch AI to train it on a remote cluster.
+In the [next challenge](challenge_02.md), we'll build a more powerful model and use Azure Machine Learning Compute to train it on a remote cluster.

@@ -70,7 +70,7 @@ This is the most interesting part:
 
 Depending on your task, there are [a lot more](https://docs.microsoft.com/en-us/python/api/azureml-train-automl/azureml.train.automl.automlconfig(class)?view=azure-ml-py) configuration parameters!
 
-Let's run it locally in our Notebook, as the data isn't too big (depending on the complexity of our data, we would want to use Batch AI again):
+Let's run it locally in our Notebook, as the data isn't too big (depending on the complexity of our data, we would want to use Azure Machine Learning Compute again):
 
 ```python
 local_run = experiment.submit(automl_config, show_output = True)
