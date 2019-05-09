@@ -1,4 +1,4 @@
-# Azure Machine Learning Bootcamp Materials (Version 1.3)
+# Azure Machine Learning Bootcamp Materials (Version 1.4)
 
 Azure Machine Learning is now [general available](https://azure.microsoft.com/en-us/blog/azure-machine-learning-service-a-look-under-the-hood/).
 
@@ -28,9 +28,9 @@ The goal is to build a machine learning model, that
 
 Guidance:
 * Deploy from Azure Portal: `Machine Learning service workspace`
-* We'll be writing our code in a Jupyter Notebook in a [DSVM (Data Science Virtual Machine)](https://azure.microsoft.com/en-us/services/virtual-machines/data-science-virtual-machines/)
+* We'll be writing our code in a Jupyter Notebook in a [Notebook VM](https://docs.microsoft.com/en-us/azure/machine-learning/service/quickstart-run-cloud-notebook)
 * This file is helpful: [`utils.py`](utils.py)
-* Use `Python [conda env:AzureML]` as the Notebook type in Jupyer
+* Use `Python 3.6 - AzureML` as the Notebook type in Jupyter (create a new folder before starting)
 * We'll be using `scikit-learn` to build a simple `LogisticRegression` classifier
 * Target accuracy of our model on the test data set: `>90%`
 
