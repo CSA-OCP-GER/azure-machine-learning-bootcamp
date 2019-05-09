@@ -43,11 +43,14 @@ You'll be using your AAD (Azure Active Directory) user to log into `Jupyter`. Fr
 
 # Initial Azure Machine Learning Setup
 
-Inside the newly created Jupyter instance, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder.
+Inside the newly created Notebook VM, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder.
 
-Next, create a text file called `config.json` (also via the `New` button) and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):
+**Note:** The next block is not needed anymore, but you'd need it if you want to connect to your Azure Machine Learning Workspace from e.g., your local machine. Since the `Notebook VM` runs inside the workspace, it knows to which workspace it needs to authenticate.
+
+~~Next, create a text file called `config.json` (also via the `New` button) and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):~~
 
 ```json
+# Ignore this block, unless you run Jupyer direclty on e.g., your laptop
 {
     "subscription_id": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx",
     "resource_group": "azure-ml-bootcamp",
@@ -55,7 +58,7 @@ Next, create a text file called `config.json` (also via the `New` button) and re
 }
 ```
 
-The `config.json` is used by the `Azure Machine Learning SDK` to connect to your `Azure Machine Learning workspace` running in Azure.
+~~The `config.json` is used by the `Azure Machine Learning SDK` to connect to your `Azure Machine Learning workspace` running in Azure.~~
 
 Download [`utils.py`](../utils.py) and upload it into your Jupyter instance (or click `New`, create an empty file called `utils.py` and copy/paste the content, but make sure to only copy the Python code). We'll need this file later for our Machine Learning example code.
 
@@ -75,7 +78,7 @@ ws = Workspace.from_config()
 
 You can run the cell by hitting `Run` or pressing `Shift+Enter`. Code cells have brackets before them. If the brackets are empty ([ ]), the code has not been run. While the code is running, you see an asterisk([*]). After the code completes, a number [1] appears. The number tells you the order in which the cells ran.
 
-This first cell imports the relevant libraries from the Azure Machine Learning SDK, reads our `config.json` and connects the notebook to our Machine Learning Workspace in Azure. You will need to authenticate to your Azure subscription (a browser window will open, but might not pop to the front - click the IE icon in the taskbar).
+This first cell imports the relevant libraries from the Azure Machine Learning SDK, ~~reads our `config.json`~~ and connects the notebook to our Machine Learning Workspace in Azure. You will need to authenticate to your Azure subscription (a browser window will open, but might not pop to the front - click the IE icon in the taskbar).
 
 ***Note (when experiencing subscription ID errors):***
 
