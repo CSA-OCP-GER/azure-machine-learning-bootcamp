@@ -1,8 +1,8 @@
 # Hints for Challenge 2
 
-Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model locally in our Notebook, we'll be using [Azure Machine Learning Compute](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-set-up-training-targets) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
+Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model in our Notebook VM, we'll be using [Azure Machine Learning Compute](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-set-up-training-targets) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
 
-**Note:** Obviously we do not need Azure Machine Learning Compute for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Machine Learning Compute In this challenge. 
+**Note:** Obviously we do not need Azure Machine Learning Compute for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Machine Learning Compute in this challenge. 
 
 First, let's create a new notebook `challenge02.ipynb` for this challenge.
 
@@ -90,9 +90,9 @@ Here we can configure our minimum and maximum cluster size, and most importantly
 
 If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Azure Machine Learning Compute cluster:
 
-![alt text](../images/02-create_cluster.png "Create our Machine Learning Compute cluster for training")
+![alt text](../images/02-create_cluster.png "Creating our Machine Learning Compute cluster for training")
 
-The cluster VM(s) will take a few minutes to spin up.
+The cluster VM(s) will take a few minutes to spin up (looks like this got a lot faster as of May 2019 :clap:).
 
 In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
 
@@ -258,7 +258,6 @@ est = Estimator(source_directory=script_folder,
                 script_params=script_params,
                 compute_target=compute_target,
                 entry_script='train.py',
-                pip_packages=['PyYAML==3.13'],
                 conda_packages=['keras'])
 ```
 
@@ -273,22 +272,28 @@ run = experiment.submit(config=est)
 run
 ```
 
-We are be able to see what is going on by logging into the Azure Portal, selecting our `ML Workspace`, clicking `Experiment`, picking the latest `Run`, clicking `Logs` and then picking the desired log file.
+The link `Link to Azure Portal` will bring us directly into our workspace:
+
+![alt text](../images/02-run_link.png "Our training run is starting")
 
 Under the `Compute` tab, we can also see that our cluster is now training the model:
 
-![alt text](../images/02-running_training.png "Our trainig is running")
+![alt text](../images/02-running_training.png "Our training is running")
 
 The initial run will take a while, here's why:
 
 In the background, Azure ML Services will now perform the following steps:
 
-* Package our scripts and dependencies as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes)
+* Package our scripts and dependencies as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes) - the Azure Container Registry will be created automatically
 * Scale up the Azure Machine Learning Compute cluster (only if initial size was 0)
 * Pull the Docker image to the Azure Machine Learning Compute cluster
 * Mount the MNIST data from Azure Blob to the Azure Machine Learning Compute cluster
 * Start the training job
-* Publish the results to our Workspace (same as in challenge)
+* Publish the results to our Workspace (same as in the last challenge)
+
+We can see the status of the training run by checking our experiment:
+
+![alt text](../images/02-training_progress.png "Making training progress")
 
 The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
 

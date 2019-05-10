@@ -99,7 +99,7 @@ service = Webservice.deploy_from_model(name = "keras-tf-mnist-service",
 service.wait_for_deployment(show_output = True)
 ```
 
-The first deployment should take around 8 minutes, as before, the Docker image needs to be build.
+The first deployment should take around 5-8 minutes, as before, the Docker image needs to be build.
 
 In our Workspace, we can check the `Images` tab:
 
