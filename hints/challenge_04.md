@@ -2,7 +2,13 @@
 
 By now, we have a good understanding how Azure Machine Learning works. In this last challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically. Automated Machine Learning is currently able to perform `classification`, `regression` and also `forecasting`.
 
-For this challenge, we'll be using the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset).
+**Note:** As of May 2019, Automated Machine Learning can also [be used directly from the Azure Portal](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments). For this challenge, we'll keep using code. We'll do a short example using the Portal below.
+
+## Code-driven
+
+For this challenge, we'll be using the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset):
+
+![alt text](../images/04-boston_house_pricing_dataset.png "Boston House Prices Dataset")
 
 Let's create a new notebook called `challenge_04.ipynb`. As always, include our libraries and connect to our Workspace:
 
@@ -76,7 +82,7 @@ Let's run it locally in our Notebook, as the data isn't too big (depending on th
 local_run = experiment.submit(automl_config, show_output = True)
 ```
 
-![alt text](../images/04-test_iterations.png "Test iterations")
+![alt text](../images/04-train_iterations.png "Train iterations")
 
 Once done, we can retrieve the best performing model (in this case, it is a [Pipeline](https://docs.microsoft.com/en-us/azure/machine-learning/service/concept-ml-pipelines)):
 
@@ -114,3 +120,45 @@ At this point:
 * We picked the best performing model and ran it against the test dataset to get a final accuracy
 * There are a [lot more possibilities](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-configure-auto-train) with Automated Machine Learning, especially `Forecasting` is also supported
 * A lot more example notebooks for Azure Machine Learning can be found [here on GitHub](https://github.com/Azure/MachineLearningNotebooks)
+
+## Portal-driven
+
+Let's try a similar thing through the Azure Portal. This time, we'll use the `Pima Indians Diabetes` dataset: The Pima Indians Diabetes Dataset involves predicting the onset of diabetes within 5 years in Pima Indians given medical details. Since the Boston Dataset was a `regression` task, this here is a `classification` problem. (You can find more datasets for trying out AutoML on [this website](https://machinelearningmastery.com/standard-machine-learning-datasets/) - the `Wine Quality Dataset` also works well.)
+
+In your Machine Learning workspace, navigate to the `Automated machine learning` section and select `+ Create experiment`. You'll see that our last AutoML experiment with the Boston dataset also shows up here (have a look at it).
+
+Give our new experiment a name and select a compute destination:
+
+![alt text](../images/04-automl_portal.png "Train iterations")
+
+We'll just keep using our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster.
+
+![alt text](../images/04-automl_portal_name.png "Name our experiment")
+
+After hitting `Next`, we can upload our data set. I've re-uploaded the data set with headers here: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv)
+ 
+Once uploaded, we can set the final details:
+
+![alt text](../images/04-automl_portal_create.png "Specify the storage details")
+
+And we will also see a preview of our data, where we can exclude features and also specify which column we want to predict:
+
+![alt text](../images/04-automl_data_preview.png "Specify the data set details")
+
+Under `Advanced Settings`, we can specify a lot more - just have a look!
+
+Once we start training, it'll take a few minutes to ramp up the experiment. Overall, the 25 iterations take quite a while. Once they are through, you should see something like this:
+
+![alt text](../images/04-automl_final_results.png "Final results")
+
+And the details per run:
+
+![alt text](../images/04-automl_final_results_ind.png "Final results per run")
+
+From here, we can download the `.pkl` file per run. Deploying the best model is not yet possible through the Azure Portal (as of May 2019) - however, we could use the Python SDK to perform those [steps in code](https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/automated-machine-learning/classification-with-deployment/auto-ml-classification-with-deployment.ipynb).
+
+At this point:
+
+* We took the `Pima Indians Diabetes Dataset` and ran automated Automated Machine Learning for classification on it
+* We evaluated 25 algorithms and achieved an accuracy of ~77.9%
+* From here, we could start further experimentation by taking the best performing pre-processing & algorithm and as a starting point

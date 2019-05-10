@@ -66,6 +66,7 @@ Guidance:
 * Create a new Jupyter Notebook
 * Take the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset)
 * Leverage [Automated Machine Learning](https://docs.microsoft.com/en-us/azure/machine-learning/service/tutorial-auto-train-models) to automatically finding the best-performing regression model for predicting house prices
+* **Note**: As of May 2019, Automated Machine Learning is also accessible from the Azure Portal - have a look at the challenge 4 hints for more details! :thumbsup:
 
 ## Further Challenges
 
