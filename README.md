@@ -1,6 +1,9 @@
 # Azure Machine Learning Bootcamp Materials (Version 1.4)
 
-Azure Machine Learning is now [general available](https://azure.microsoft.com/en-us/blog/azure-machine-learning-service-a-look-under-the-hood/).
+* 05/2019 - Lots of new capabilities [have been announced](https://azure.microsoft.com/en-us/blog/making-ai-real-for-every-developer-and-every-organization/).
+* 12/2019 - Azure Machine Learning is now [general available](https://azure.microsoft.com/en-us/blog/azure-machine-learning-service-a-look-under-the-hood/).
+
+![alt text](images/logo.png "Azure Machine Learning Serviecs")
 
 Here are the top two resources you'll need this afternoon:
 
