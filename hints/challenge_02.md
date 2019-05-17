@@ -51,7 +51,7 @@ If we go to the default Storage Account that the Azure ML Workspace created for 
 Next, we can create an `Azure Machine Learning Compute` cluster in Azure:
 
 ***Note:***
-If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default). To do so, add a `location='eastus'` parameter in the `AmlCompute.provisioning_configuration` line (not needed if you have your workspace running in `eastus`). 
+If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default).
 
 ```python
 from azureml.core.compute import AmlCompute

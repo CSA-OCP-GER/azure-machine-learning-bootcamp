@@ -145,7 +145,7 @@ And we will also see a preview of our data, where we can exclude features and al
 
 ![alt text](../images/04-automl_data_preview.png "Specify the data set details")
 
-Under `Advanced Settings`, we can specify a lot more - just have a look!
+Under `Advanced Settings`, it might be useful to set `Max concurrent iterations` to `4`, so that we utilize all cores available. 
 
 Once we start training, it'll take a few minutes to ramp up the experiment. Overall, the 25 iterations take quite a while. Once they are through, you should see something like this:
 
