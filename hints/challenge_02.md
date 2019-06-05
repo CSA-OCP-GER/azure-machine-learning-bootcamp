@@ -280,6 +280,16 @@ Under the `Compute` tab, we can also see that our cluster is now training the mo
 
 ![alt text](../images/02-running_training.png "Our training is running")
 
+While the training is running, we can also display a nice widget directly in our notebook:
+
+```python
+from azureml.widgets import RunDetails
+RunDetails(run).show()
+```
+
+![alt text](../images/02-training_widget.png "Training widget")
+
+
 The initial run will take a while, here's why:
 
 In the background, Azure ML Services will now perform the following steps:
