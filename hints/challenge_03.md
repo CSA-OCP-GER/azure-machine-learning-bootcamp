@@ -126,7 +126,7 @@ headers = {'Content-Type':'application/json'}
 data = '{"image_url": "https://bootcamps.blob.core.windows.net/ml-test-images/4.png"}'
 
 resp = requests.post(service.scoring_uri, data=data, headers=headers)
-print("Prediction Results:", resp.text)
+print("Prediction Results:", resp.json())
 ```
 
 The prediction results contain the probabilities for the image being a 0, 1, 2, ... or 9.
