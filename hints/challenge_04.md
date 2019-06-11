@@ -2,7 +2,7 @@
 
 By now, we have a good understanding how Azure Machine Learning works. In this last challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically. Automated Machine Learning is currently able to perform `classification`, `regression` and also `forecasting`.
 
-**Note:** As of May 2019, Automated Machine Learning can also [be used directly from the Azure Portal](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments). For this challenge, we'll keep using code. We'll do a short example using the Portal below.
+**Note:** As of May 2019, Automated Machine Learning can also [be used directly from the Azure Portal](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments). We'll walk through both, using code and using the Portal in this challenge.
 
 ## Code-driven
 
@@ -34,7 +34,7 @@ project_folder = './automl-local-regression'
 experiment = Experiment(ws, experiment_name)
 ```
 
-Let's load our dataset and split it into a train and test set (this time, we didn't get pre-prepared data sets):
+Let's load our dataset and split it into a train and test set (this time, we didn't use a pre-prepared data sets):
 
 ```python
 from sklearn.datasets import load_boston
@@ -123,7 +123,10 @@ At this point:
 
 ## Portal-driven
 
-Let's try a similar thing through the Azure Portal. This time, we'll use the `Pima Indians Diabetes` dataset: The Pima Indians Diabetes Dataset involves predicting the onset of diabetes within 5 years in Pima Indians given medical details. Since the Boston Dataset was a `regression` task, this here is a `classification` problem. (You can find more datasets for trying out AutoML on [this website](https://machinelearningmastery.com/standard-machine-learning-datasets/) - the `Wine Quality Dataset` also works well.)
+Let's try a similar thing through the Azure Portal. This time, we'll use the `Pima Indians Diabetes` dataset: The Pima Indians Diabetes Dataset involves predicting the onset of diabetes within 5 years in Pima Indians given medical details. Since the Boston Dataset was a `regression` task, this here is a `classification` problem. Before getting started, have a look at the data set: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv).
+
+**Note:**
+You can find more datasets for trying out AutoML on [this website](https://machinelearningmastery.com/standard-machine-learning-datasets/) - the `Wine Quality Dataset` also makes for a nice demo.
 
 In your Machine Learning workspace, navigate to the `Automated machine learning` section and select `+ Create experiment`. You'll see that our last AutoML experiment with the Boston dataset also shows up here (have a look at it).
 
@@ -145,6 +148,8 @@ And we will also see a preview of our data, where we can exclude features and al
 
 ![alt text](../images/04-automl_data_preview.png "Specify the data set details")
 
+Also have a look at the `Profile` tab. This allows to see a brief overview of the data and can give early indication, if the data or some features are skewed.
+
 Under `Advanced Settings`, it might be useful to set `Max concurrent iterations` to `4`, so that we utilize all cores available. 
 
 Once we start training, it'll take a few minutes to ramp up the experiment. Overall, the 25 iterations take quite a while. Once they are through, you should see something like this:
@@ -155,10 +160,18 @@ And the details per run:
 
 ![alt text](../images/04-automl_final_results_ind.png "Final results per run")
 
-From here, we can download the `.pkl` file per run. Deploying the best model is not yet possible through the Azure Portal (as of May 2019) - however, we could use the Python SDK to perform those [steps in code](https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/automated-machine-learning/classification-with-deployment/auto-ml-classification-with-deployment.ipynb).
+From here, we can download the `.pkl` file per run. If we click one of the runs, we can now also deploy the model:
+
+![alt text](../images/04-automl_run_details.png "Run details")
+
+Under `Deploy Model`, first register the model. Then download the `score.py` and the `.yaml` configuration.
+
+From here on, you can either re-use the lines for deployment in challenge 3, or just follow [these steps](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments#deploy-model).
+
 
 At this point:
 
 * We took the `Pima Indians Diabetes Dataset` and ran automated Automated Machine Learning for classification on it
-* We evaluated 25 algorithms and achieved an accuracy of ~77.9%
-* From here, we could start further experimentation by taking the best performing pre-processing & algorithm and as a starting point
+* We evaluated 25 algorithms and achieved an accuracy of ~77.9% (your accuracy might vary, since it is not necessarily deterministic)
+* We took the best performing model and deployed it to ACI (similar to challenge 3)
+* If we don't like the model yet, we could also start further experimentation by taking the best performing pre-processing & algorithm and use it as a starting point

@@ -60,7 +60,7 @@ Inside the newly created Notebook VM, first create a new folder via the `New` bu
 
 ~~The `config.json` is used by the `Azure Machine Learning SDK` to connect to your `Azure Machine Learning workspace` running in Azure.~~
 
-Download [`utils.py`](../utils.py) and upload it into your Jupyter instance (or click `New`, create an empty file called `utils.py` and copy/paste the content, but make sure to only copy the Python code). We'll need this file later for our Machine Learning example code.
+Download [`utils.py`](https://raw.githubusercontent.com/CSA-OCP-GER/azure-machine-learning-bootcamp/master/utils.py) and upload it into your Jupyter instance (or click `New`, create an empty file called `utils.py` and copy/paste the content, but make sure to only copy the Python code). We'll need this file later for our Machine Learning example code.
 
 Finally, we can click the `New` button and create a new Notebook of type: `Python 3.6 - AzureML`. A new browser tab should open up and we can click the name `Untitled` and rename it to `challenge01.ipynb`.
 
@@ -76,9 +76,9 @@ from azureml.core import Workspace, Experiment, Run
 ws = Workspace.from_config()
 ```
 
-You can run the cell by hitting `Run` or pressing `Shift+Enter`. Code cells have brackets before them. If the brackets are empty ([ ]), the code has not been run. While the code is running, you see an asterisk([*]). After the code completes, a number [1] appears. The number tells you the order in which the cells ran.
+You can run the cell by hitting `Run` or pressing `Shift+Enter`. Code cells have brackets before them. If the brackets are empty `[ ]`, the code has not been run. While the code is running, you see an asterisk `[*]`. After the code completes, a number `[1]` appears. The number tells you the order in which the cells ran.
 
-This first cell imports the relevant libraries from the Azure Machine Learning SDK, ~~reads our `config.json`~~ and connects the notebook to our Machine Learning Workspace in Azure. You will need to authenticate to your Azure subscription (a browser window will open, but might not pop to the front - click the IE icon in the taskbar).
+This first cell imports the relevant libraries from the Azure Machine Learning SDK, ~~reads our `config.json`~~ and connects the notebook to our Machine Learning Workspace in Azure. You will need to authenticate to your Azure subscription (a browser window will open, but might not pop to the front - click the IE icon in the taskbar). 
 
 ***Note (when experiencing subscription ID errors):***
 
@@ -90,7 +90,7 @@ If you are using multiple subscriptions, it might be required to tell the Jupyte
 
 Once you have ran the cell, restart the Notebook kernel (`Kernel` --> `Restart & Clear Output`) and wait a few seconds until it has restarted.
 
-Next, let's create a new experiment (this will later show up in our ML Workspace in Azure after you've ran the first experiment). This is where all our experiments will be logged to:
+Next, let's create a new experiment (this will later show up in our ML Workspace in Azure after you've ran the first experiment run). This is where all our experiment runs will be logged to:
 
 ```python
 experiment = Experiment(workspace = ws, name = "scikit-learn-mnist")
@@ -110,7 +110,7 @@ urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ub
 urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', filename='./data/test-labels.gz')
 ```
 
-Let's create a fourth cell for training our model. Make sure that `utils.py` is in the notebook. In case you've forgot to include `utils.py` or added it after you've stared the notebook, you'll need to restart your notebook (via `Kernel --> Restart`) and re-run all the cells.
+Let's create a fourth cell for training our model. Make sure that [`utils.py`](https://raw.githubusercontent.com/CSA-OCP-GER/azure-machine-learning-bootcamp/master/utils.py) is in the notebook. In case you've forgot to include [`utils.py`](https://raw.githubusercontent.com/CSA-OCP-GER/azure-machine-learning-bootcamp/master/utils.py) or added it after you've stared the notebook, you'll need to restart your notebook (via `Kernel --> Restart`) and re-run all the cells.
 
 ```python
 from utils import load_data

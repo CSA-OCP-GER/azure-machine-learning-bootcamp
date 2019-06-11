@@ -289,7 +289,6 @@ RunDetails(run).show()
 
 ![alt text](../images/02-training_widget.png "Training widget")
 
-
 The initial run will take a while, here's why:
 
 In the background, Azure ML Services will now perform the following steps:
@@ -305,7 +304,7 @@ We can see the status of the training run by checking our experiment:
 
 ![alt text](../images/02-training_progress.png "Making training progress")
 
-The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case you use a GPU-equipped instance, you might need to tell your framework to use it).
+The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case if you use a GPU-equipped instance, but then you might need to tell your framework to use it).
 
 With the same code as before (this is the strength of Azure ML), we can retrieve the results of our training run:
 

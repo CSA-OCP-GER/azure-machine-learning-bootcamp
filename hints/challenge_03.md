@@ -150,5 +150,6 @@ At this point:
 
 * We took our high-accuracy model from challenge 2 and deployed it on Azure Container Instances as a web service
 * We can do simple RESTful API calls to our endpoint for scoring 28x28 pixel sized images
+* Please note that deploying models to ACI is currently not suited for production workloads - instead, it is recommended to deploy to AKS
 
 Often, we have a simpler data set and want to figure out how we can best classify or predict certain data points - without trying out a lot of Machine Learning algorithms ourselves. Hence, we'll look at Automated Machine Learning in the [fourth challenge](challenge_04.md).
