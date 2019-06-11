@@ -164,10 +164,53 @@ From here, we can download the `.pkl` file per run. If we click one of the runs,
 
 ![alt text](../images/04-automl_run_details.png "Run details")
 
-Under `Deploy Model`, first register the model. Then download the `score.py` and the `.yaml` configuration.
+Under `Deploy Model`, first register the model. Then download the `scoring.py` script and the `condaEnv.yml` configuration.
 
-From here on, you can either re-use the lines for deployment in challenge 3, or just follow [these steps](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments#deploy-model).
+Head over to `Models` in the workspace, select the model and hit `Create Image`. Here we can upload the scoring and Conda environment files:
 
+Once the image has been created, head to `Images`, select the image and hit `Create Deployment`:
+
+![alt text](../images/04-automl_create_deployment.png "Create Image")
+
+After a few minutes, our model should be up and running as an ACI. We can find the scoring URI under the deployment's details:
+
+![alt text](../images/04-automl_scoring_uri.png "Scoring URI")
+
+Finally we can score one or more data samples using the following Python code:
+
+```python
+import requests
+import json
+
+url = 'Replace with your URL'
+headers = {'Content-Type':'application/json'}
+data = {"data": [{
+    "times_pregnant": 6,
+    "glucose": 148,
+    "blood_pressure": 72,
+    "triceps_thickness": 35,
+    "insulin": 0,
+    "bmi": 33.6,
+    "diabetes_pedigree": 0.627,
+    "age": 50
+},
+{
+    "times_pregnant": 1,
+    "glucose": 85,
+    "blood_pressure": 66,
+    "triceps_thickness": 29,
+    "insulin": 0,
+    "bmi": 26.6,
+    "diabetes_pedigree": 0.351,
+    "age": 31
+    
+}]}
+
+resp = requests.post(url, data=json.dumps(data), headers=headers)
+print("Prediction Results:", resp.json())
+```
+
+More details can be found [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments#deploy-model). We can obviously relatively easily re-use the code from challenge 3, and just swap out the `score.py` and the `conda.yml` for programmatically deploying the model.
 
 At this point:
 
