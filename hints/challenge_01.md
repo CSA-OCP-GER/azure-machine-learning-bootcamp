@@ -27,7 +27,7 @@ Inside our `Machine Learning service workspace`, we'll create a new `Notebook VM
 
 ![alt text](../images/01-create_notebook_vm.png "Notebook VM")
 
-Hit `+ New` and name it `bootcamp-vm` and keep it as `STANDARD_D3_V2`:
+Hit `+ New`,keep it as `STANDARD_D3_V2` and give it a unique name:
 
 ![alt text](../images/01-bootcamp_notebook_vm.png "Creating the Notebook VM for the bootcamp")
 
