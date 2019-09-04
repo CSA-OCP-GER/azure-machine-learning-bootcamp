@@ -1,8 +1,8 @@
 # Hints for Challenge 2
 
-Our model in challenge 1 had an accuracy of `92%`. For the MNIST data set, this is not very good. In order to train a more powerful and complex model, we'll need more compute. Hence, instead of training a model in our Notebook VM, we'll be using [Azure Machine Learning Compute](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-set-up-training-targets) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll use Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
+In challenge 1, our model achieved an accuracy of `~92%`. For the MNIST data set, this is not very good. For improving model accuracy, we'll be training a Deep Convolutional Neural Network in this challenge. For training this more powerful and complex model, we'll need more compute. Therefore, instead of training a model in our Notebook VM, we'll be using [Azure Machine Learning Compute](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-set-up-training-targets) to train our model on a dedicated compute cluster. As a Machine Learning framework, we'll be using Keras with a TensorFlow backend. The good thing is, that the interaction with Azure Machine Learning won't change.
 
-**Note:** Obviously we do not need Azure Machine Learning Compute for such a simple task, a single VM instance with GPU would be absolutely sufficient. However - for sake of education - we'll be using Azure Machine Learning Compute in this challenge. 
+**Note:** Obviously we do not need Azure Machine Learning Compute for such a simple task, a single VM instance (probably even without GPU) would be absolutely sufficient. However - for sake of education - we'll be using Azure Machine Learning Compute in this challenge. 
 
 First, let's create a new notebook `challenge02.ipynb` for this challenge.
 
@@ -29,9 +29,9 @@ urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ub
 urllib.request.urlretrieve('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', filename='./data/test-labels.gz')
 ```
 
-In this challenge, we'll be training remotely. Therefore, we'll need to access the MNIST dataset inside our Azure Machine Learning Compute cluster.
+In this challenge, we'll be training remotely. Therefore, we'll need to be able to access the MNIST dataset from our Azure Machine Learning Compute cluster.
 
-To do so, we'll upload it to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Blob) and upload the four files from MNIST into the `./mnist` folder:
+To do so, we'll upload our data to the default datastore that our Azure ML Workspace provided for us. This code will retrieve the default datastore (Azure Blob) and upload the four files from MNIST into the `./mnist` folder:
 
 ```python
 ds = ws.get_default_datastore()
@@ -50,9 +50,6 @@ If we go to the default Storage Account that the Azure ML Workspace created for 
 
 Next, we can create an `Azure Machine Learning Compute` cluster in Azure:
 
-***Note:***
-If you are using a `Pay-as-you-Go` or `Free Trial` Azure subscription, please make sure that your Machine Learning workspace is in `eastus` region (it can happen that `westeurope` is not enabled by default).
-
 ```python
 from azureml.core.compute import AmlCompute
 from azureml.core.compute import ComputeTarget
@@ -62,15 +59,15 @@ import os
 compute_name = "cpucluster"
 compute_min_nodes = 1
 compute_max_nodes = 1
-vm_size = "STANDARD_D4_V2"
+vm_size = "Standard_F16s_v2"
 
 # Check if a cluster with the same name already exists
-if compute_name in ws.compute_targets:
+if compute_name in ws.compute_targets and type(compute_target) is AmlCompute:
+    print("Found compute target, let's just reuse it:", compute_name)
     compute_target = ws.compute_targets[compute_name]
-    if compute_target and type(compute_target) is AmlCompute:
-        print("Found compute target, let's just reuse it:", compute_name)
+
 else:
-    print('Creating a new compute target...')
+    print('Creating a new compute target, this will take a few minutes...')
     compute_config = AmlCompute.provisioning_configuration(vm_size = vm_size,
                                                            min_nodes = compute_min_nodes,
                                                            max_nodes = compute_max_nodes)
@@ -79,22 +76,21 @@ else:
     compute_target = ComputeTarget.create(ws, compute_name, compute_config)
     
     # We can poll for a minimum number of nodes and for a specific timeout. 
-    # If no min node count is provided it will use the scale settings for the cluster
     compute_target.wait_for_completion(show_output=True, min_node_count=None, timeout_in_minutes=20)
     
-     # For a more detailed view of current AmlCompute status, use the 'status' property    
+    # For a more detailed view of current AmlCompute status, use the 'status' property    
     print(compute_target.status.serialize())
 ```
 
-Here we can configure our minimum and maximum cluster size, and most importantly, the VM Size. In our example, we'll stick with a smaller VM for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. Provisioning the initial cluster should take around 3-5 minutes. More details on further configuration parameters can be found [here](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.compute.amlcompute(class)?view=azure-ml-py#provisioning-configuration-vm-size-----vm-priority--dedicated---min-nodes-0--max-nodes-none--idle-seconds-before-scaledown-none--vnet-resourcegroup-name-none--vnet-name-none--subnet-name-none--tags-none--description-none-), as for example `idle_seconds_before_scaledown`, which defines when the cluster should auto-scale down.
+The cluster VM(s) will take around 2-4 minutes to spin up (looks like this got a lot faster as of May 2019 :clap:).
+
+As we can see, we can configure our minimum and maximum cluster size, and most importantly, the VM size. In our example, we'll stick with a medium VM without GPU for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. More details on further configuration parameters can be found [here](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.compute.amlcompute(class)?view=azure-ml-py#provisioning-configuration-vm-size-----vm-priority--dedicated---min-nodes-0--max-nodes-none--idle-seconds-before-scaledown-none--vnet-resourcegroup-name-none--vnet-name-none--subnet-name-none--tags-none--description-none-), as for example `idle_seconds_before_scaledown`, which defines when the cluster should auto-scale down (only makes sense if `min_nodes != max_nodes`).
 
 If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Azure Machine Learning Compute cluster:
 
 ![alt text](../images/02-create_cluster.png "Creating our Machine Learning Compute cluster for training")
 
-The cluster VM(s) will take a few minutes to spin up (looks like this got a lot faster as of May 2019 :clap:).
-
-In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it:
+In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it (useful if we're using multiple `*.py` files):
 
 ```python
 import os, shutil
@@ -112,6 +108,8 @@ This cell writes the `train.py` to the `scripts` folder (we could have created i
 import argparse
 import os
 import numpy as np
+import gzip
+import struct
 
 import keras
 from keras.datasets import mnist
@@ -121,7 +119,21 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 
 from azureml.core import Run
-from utils import load_data
+
+# load compressed MNIST gz files we just downloaded and return numpy arrays
+def load_data(filename, label=False):
+    with gzip.open(filename) as gz:
+        struct.unpack('I', gz.read(4))
+        n_items = struct.unpack('>I', gz.read(4))
+        if not label:
+            n_rows = struct.unpack('>I', gz.read(4))[0]
+            n_cols = struct.unpack('>I', gz.read(4))[0]
+            res = np.frombuffer(gz.read(n_items[0] * n_rows * n_cols), dtype=np.uint8)
+            res = res.reshape(n_items[0], n_rows * n_cols)
+        else:
+            res = np.frombuffer(gz.read(n_items[0]), dtype=np.uint8)
+            res = res.reshape(n_items[0], 1)
+    return res
 
 # Helper class for real-time logging
 class CheckpointCallback(keras.callbacks.Callback):
@@ -289,12 +301,10 @@ RunDetails(run).show()
 
 ![alt text](../images/02-training_widget.png "Training widget")
 
-The initial run will take a while, here's why:
-
 In the background, Azure ML Services will now perform the following steps:
 
-* Package our scripts and dependencies as a Docker image and push it to our Azure Container Registry (initially this will take 5-10 minutes) - the Azure Container Registry will be created automatically
-* Scale up the Azure Machine Learning Compute cluster (only if initial size was 0)
+* Package our scripts and dependencies as a Docker image and push it to our Azure Container Registry (initially this will take ~5 minutes) - the Azure Container Registry will be created automatically
+* (Scale up the Azure Machine Learning Compute cluster - not happening here, since we have `min_size=1`)
 * Pull the Docker image to the Azure Machine Learning Compute cluster
 * Mount the MNIST data from Azure Blob to the Azure Machine Learning Compute cluster
 * Start the training job
@@ -304,7 +314,7 @@ We can see the status of the training run by checking our experiment:
 
 ![alt text](../images/02-training_progress.png "Making training progress")
 
-The first run might take ~10-15 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be ready and already pushed. By using a more powerful VM, a single run can be executed in less than a minute (in case if you use a GPU-equipped instance, but then you might need to tell your framework to use it).
+The first run takes around ~10-12 minutes. Subsequent runs will be significantly faster (~5 minutes) as the base Docker image will be re-used. By using a more powerful VM, a single run can probably be executed in less than a minute (in case if you use a GPU-equipped instance, but then you might need to tell your framework to use it).
 
 With the same code as before (this is the strength of Azure ML), we can retrieve the results of our training run:
 
@@ -326,7 +336,7 @@ model = run.register_model(model_name='keras-tf-mnist-model', model_path='output
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-If we want, we can also delete our Azure Machine Learning Compute cluster (we won't need it in the next challenges):
+If we want, we can also delete our Azure Machine Learning Compute cluster (we won't need it in the next challenge):
 
 ```python
 compute_target.delete()
@@ -335,7 +345,7 @@ compute_target.delete()
 At this point (in addition to the results from challenge 1):
 
 * We used the Azure Machine Learning SDK with Azure Machine Learning Compute in the background to train a Convolutional Neural Network (CNN)
-* We switched our training framework from Scikit-Learn to Keras with TensorFlow in the backend (without changing any Azure ML SDK code!)
+* We switched our training framework from scikit-learn to Keras with TensorFlow in the backend (without changing any Azure ML SDK code!)
 * We registered our new model (>`99%` accuracy) in our Azure ML Workspace
 
-Great, now we have a well performing model. Obviously, we want other people, maybe some developers, make use of it. Therefore, we'll deploy it as an API to production in the [next challenge](challenge_03.md).
+Great, now we have a well performing model. Obviously, we want other people, maybe some developers, make use of it. Therefore, we'll deploy it as an API to an Azure Container Instance in the [next challenge](challenge_03.md).

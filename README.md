@@ -41,7 +41,7 @@ Guidance:
 
 :zap: Here are some **[hints](hints/challenge_02.md)** for this challenge!
 
-In this challenge, you'll be training a more advanced machine learning model on Azure (in fact, you'll be training a Deep Convolution Neural Network). We'll be using the same data set, but this time, we'll use Azure Machine Learning Compute for speeding up our training.
+In this challenge, you'll be training a more advanced machine learning model on Azure (in fact, you'll be training a Deep Convolution Neural Network). We'll be using the same data set, but this time, we'll use Azure Machine Learning Compute for speeding up and scaling our training.
 
 Guidance:
 * Use `Keras` with a TensorFlow backend to train a Convolution Neural Network on Azure Machine Learning Compute
@@ -51,7 +51,7 @@ Guidance:
 
 :zap: Here are some **[hints](hints/challenge_03.md)** for this challenge!
 
-In this third challenge, you'll be taking the model you've trained in the second challenge and deploy it to Azure Container Instances (ACI). This is perfect for test/dev scenarios. We'll get to production deployments in a later challenge.
+In this third challenge, you'll be taking the model you've trained in the second challenge and deploy it to Azure Container Instances (ACI). This is perfect for test/dev scenarios and giving our model a quick test drive (we'll get to production deployments in a later challenge).
 
 Guidance:
 * Take the model from challenge 2 and containerize it (Azure ML will do most of that for us)

@@ -1,11 +1,11 @@
 # Hints for Challenge 3
 
-After challenge 2, we finally have a model that has an accuracy of more than 99% - time to deploy it to production!
-Hence, we'll now be taking the model and we'll deploy it on [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/).
+After challenge 2, we finally have a model that has an accuracy of more than 99% - time to deploy it as an API!
+Hence, we'll be taking the model and we will deploy it to an [Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/).
 
-**We'll reuse the same notebook as in challenge 2, as it will have the container images cached.**
+**We'll reuse the same notebook as in challenge 2!**
 
-Our Azure Subscription must first have the resource providers for Azure Container Instances enabled (in many cases, this is probably already enabled in your subscription):
+Our Azure Subscription must first have the resource providers for Azure Container Instances enabled (in 99% of the cases, this is probably already enabled in your subscription):
 
 ```python
 !az provider show -n Microsoft.ContainerInstance -o table
@@ -34,7 +34,7 @@ model = Model(ws, name="keras-tf-mnist-model")
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-We need to write a short `score.py` script, that Azure ML understands for loading our model and exposing it as a web service. This file will be packaged as a Docker container so that we can deploy it to ACI.
+We need to write a short `score.py` script, which Azure ML understands for loading our model and exposing it as a web service. This file will be packaged as a Docker container so that we can deploy it to ACI.
 
 ```python
 %%writefile score.py
@@ -75,7 +75,7 @@ with open("keras-tf-mnist.yml","w") as f:
     f.write(myenv.serialize_to_string())
 ```
 
-Finally, we are able to configure Azure Container Instances and deploy our model to production:
+Finally, we are able to configure our Azure Container Instance and deploy our model as an API:
 
 ```python
 from azureml.core.webservice import AciWebservice, Webservice
@@ -99,7 +99,7 @@ service = Webservice.deploy_from_model(name = "keras-tf-mnist-service",
 service.wait_for_deployment(show_output = True)
 ```
 
-The first deployment should take around 5-8 minutes, as before, the Docker image needs to be build.
+The first deployment should take around 5-8 minutes.
 
 In our Workspace, we can check the `Images` tab:
 
@@ -131,6 +131,8 @@ print("Prediction Results:", resp.json())
 
 The prediction results contain the probabilities for the image being a 0, 1, 2, ... or 9.
 
+![alt text](../images/03-api_results.png "Our prediction results")
+
 Here are some more hand-drawn test images:
 
 ```
@@ -150,6 +152,6 @@ At this point:
 
 * We took our high-accuracy model from challenge 2 and deployed it on Azure Container Instances as a web service
 * We can do simple RESTful API calls to our endpoint for scoring 28x28 pixel sized images
-* Please note that deploying models to ACI is currently not suited for production workloads - instead, it is recommended to deploy to AKS
+* Please note that deploying models to ACI is currently not suited for production workloads - instead, it is recommended to deploy to AKS (we'll get to that soon)
 
 Often, we have a simpler data set and want to figure out how we can best classify or predict certain data points - without trying out a lot of Machine Learning algorithms ourselves. Hence, we'll look at Automated Machine Learning in the [fourth challenge](challenge_04.md).
