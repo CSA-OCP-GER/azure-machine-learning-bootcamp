@@ -73,10 +73,10 @@ Guidance:
 
 :zap: Here are some **[hints](hints/challenge_05.md)** for this challenge!
 
-In this last challenge, you'll be deploying the model from challenge 4 to Azure Kubernetes Service (AKS). Since this will mimic a production deployment, we want to have authentication, monitoring (using Application Insights) and data collection (to Azure Blob) enabled!
+In this last challenge, you'll be deploying the model from challenge 4 to Azure Kubernetes Service (AKS). Since this will mimic a production deployment, we want to make sure to enable authentication, telemetry monitoring (using Application Insights) and data collection (to Azure Blob) for our model!
 
 Guidance:
-* Register one of the models from challenge 4 in your workspace 
+* Re-use the already registered model from challenge 4 in your workspace 
 * Create a scoring script with [data collection enabled](https://docs.microsoft.com/bs-latn-ba/azure/machine-learning/service/how-to-enable-data-collection)
 * Create a AKS cluster
 * Deploy the model with authentication and [monitoring](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights)
@@ -92,7 +92,7 @@ Guidance:
 
 # Further Trainings
 
-* :star: [Microsoft Learn - Machine Learning](https://docs.microsoft.com/en-us/learn/browse/?roles=data-scientist&term=machine%20learning) - good selection of short training units and exercises, highly recommended! :star:
+* :star: [Microsoft Learn - Machine Learning](https://docs.microsoft.com/en-us/learn/browse/?roles=data-scientist&term=machine%20learning) - great selection of short training units and exercises! :star:
 * [AI Business School](https://aischool.microsoft.com) - great for gaining specific, practical knowledge for defining and implementing an AI strategy in your company (more targeted at business users, but also covers the responsible use of AI)
 * [Microsoft Professional Program for Artificial Intelligence track](https://academy.microsoft.com/en-us/tracks/artificial-intelligence) - extremely in-depth and very extensive Machine Learning training (includes a lot of mandatory hands-on)
 
