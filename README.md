@@ -61,27 +61,26 @@ Guidance:
 
 :zap: Here are some **[hints](hints/challenge_04.md)** for this challenge!
 
-In this last challenge, you'll be using Automated Machine Learning to let Azure figure out which Machine Learning algorithm performs best on our dataset. We'll do two examples, one code-driven in your Jupyter notebook and one Portal-driven through the Azure Portal
+In this challenge, you'll be using Automated Machine Learning to let Azure figure out which Machine Learning algorithm performs best on our dataset. We'll fully leverage the Azure Portal for that, hence no coding needed!
 
-Guidance for code-driven experience:
-* Create a new Jupyter Notebook
-* Take the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset)
-* Leverage [Automated Machine Learning](https://docs.microsoft.com/en-us/azure/machine-learning/service/tutorial-auto-train-models) to automatically finding the best-performing regression model for predicting house prices
-
-Guidance for Portal-driven, graphical experience:
-
+Guidance:
 * Create an `Automated Machine Learning` experiment in your Azure Machine Learning Workspace
 * Take the [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv) data set as the input
 * Let it figure out the best performing model
-* **Bonus points**: Deploy the model to ACI as a scoring endpoint
+* **Bonus points**: Deploy the model to ACI as a scoring endpoint (takes just a few clicks)
 
-## Further Challenges
+## Challenge 5 - Production deployment to Azure Kubernetes Service (AKS)
 
-There's a lot more interesting stuff that Azure Machine Learning can do for us. Most likely, we won't get it to it today due to time constraints:
+:zap: Here are some **[hints](hints/challenge_05.md)** for this challenge!
 
-* Secure our model endpoint on ACI/AKS with an authentication key (use `auth_enabled` and [see here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-consume-web-service#connection-information))
-* Embed Application Insights into our model for monitoring (look [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-data-collection) and [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights))
-* Distributed training in [TensorFlow](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-tensorflow#distributed-training) or [PyTorch](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-train-pytorch#distributed-training)
+In this last challenge, you'll be deploying the model from challenge 4 to Azure Kubernetes Service (AKS). Since this will mimic a production deployment, we want to have authentication, monitoring (using Application Insights) and data collection (to Azure Blob) enabled!
+
+Guidance:
+* Register one of the models from challenge 4 in your workspace 
+* Create a scoring script with [data collection enabled](https://docs.microsoft.com/bs-latn-ba/azure/machine-learning/service/how-to-enable-data-collection)
+* Create a AKS cluster
+* Deploy the model with authentication and [monitoring](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights)
+
 
 # Recommended Certifications
 
@@ -93,13 +92,13 @@ There's a lot more interesting stuff that Azure Machine Learning can do for us. 
 
 # Further Trainings
 
-* [Microsoft Learn - Machine Learning](https://docs.microsoft.com/en-us/learn/browse/?roles=data-scientist&term=machine%20learning) - good selection of short training units and exercises, highly recommended! :star: :star: :star:
+* :star: [Microsoft Learn - Machine Learning](https://docs.microsoft.com/en-us/learn/browse/?roles=data-scientist&term=machine%20learning) - good selection of short training units and exercises, highly recommended! :star:
 * [AI Business School](https://aischool.microsoft.com) - great for gaining specific, practical knowledge for defining and implementing an AI strategy in your company (more targeted at business users, but also covers the responsible use of AI)
 * [Microsoft Professional Program for Artificial Intelligence track](https://academy.microsoft.com/en-us/tracks/artificial-intelligence) - extremely in-depth and very extensive Machine Learning training (includes a lot of mandatory hands-on)
 
 # Further Material
 
-* [Azure Machine Learning Notebook Samples](https://github.com/Azure/MachineLearningNotebooks) - this should solve 99% of your problems :star: :star: :star:
+* :star: [Azure Machine Learning Notebook Samples](https://github.com/Azure/MachineLearningNotebooks) - this should solve 99% of your problems :star:
 * [Azure Machine Learning Overview](https://azure.microsoft.com/en-us/blog/azure-ai-making-ai-real-for-business/)
 * [Azure Machine Learning Overview - What's new](https://azure.microsoft.com/en-us/blog/what-s-new-in-azure-machine-learning-service/)
 * [Automated Machine Learning Overview](https://azure.microsoft.com/en-us/blog/announcing-automated-ml-capability-in-azure-machine-learning/)

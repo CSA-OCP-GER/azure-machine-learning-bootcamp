@@ -1,182 +1,79 @@
 # Hints for Challenge 4
 
-By now, we have a good understanding how Azure Machine Learning works. In this last challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically. Automated Machine Learning is currently able to perform `classification`, `regression` and also `forecasting`.
+By now, we have a good understanding how Azure Machine Learning works. In this  challenge, we'll take a data set and use Automated Machine Learning for testing out different regression algorithms automatically. Automated Machine Learning is currently able to perform `classification`, `regression` and also `forecasting`.
 
-**Note:** As of May 2019, Automated Machine Learning can also [be used directly from the Azure Portal](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments). We'll walk through both, using code and using the Portal in this challenge.
+**Note:** As of May 2019, Automated Machine Learning can also [be used directly from the Azure Portal](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments). In this challenge, we'll use the Portal, in the next challenge, we'll be using code.
 
-## Code-driven
+## Dataset
 
-For this challenge, we'll be using the [Boston house prices dataset](http://scikit-learn.org/stable/datasets/index.html#boston-dataset):
-
-![alt text](../images/04-boston_house_pricing_dataset.png "Boston House Prices Dataset")
-
-Let's create a new notebook called `challenge_04.ipynb`. As always, include our libraries and connect to our Workspace:
-
-```python
-import logging
-
-import numpy as np
-from sklearn import datasets
-
-import azureml.core
-from azureml.core.experiment import Experiment
-from azureml.core.workspace import Workspace
-from azureml.train.automl import AutoMLConfig
-from azureml.train.automl.run import AutoMLRun
-
-ws = Workspace.from_config()
-```
-
-```python
-experiment_name = 'automl-local-regression'
-project_folder = './automl-local-regression'
-
-experiment = Experiment(ws, experiment_name)
-```
-
-Let's load our dataset and split it into a train and test set (this time, we didn't use a pre-prepared data sets):
-
-```python
-from sklearn.datasets import load_boston
-
-from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
-
-X, y = load_boston(return_X_y = True)
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
-```
-
-Now, we need to configure our Automated Machine Learning project:
-
-```python
-automl_config = AutoMLConfig(task = 'regression',
-                             iteration_timeout_minutes = 2,
-                             iterations = 10,
-                             primary_metric = 'normalized_root_mean_squared_error',
-                             n_cross_validations = 5,
-                             debug_log = 'automl.log',
-                             verbosity = logging.INFO,
-                             X = X_train, 
-                             y = y_train,
-                             path = project_folder)
-```
-
-This is the most interesting part:
-
-* `task` - Type of problem (classification or regression)
-* `primary_metric` - The metric that we want to optimize
-* `iteration_timeout_minutes` - Time limit per iteration
-* `iterations` - Number of iterations (number of algorithms tested)
-* `n_cross_validations` - Number of cross validation splits
-* `X` - Training data
-* `y` - Training labels
-* `path` - Output for configuration files
-
-Depending on your task, there are [a lot more](https://docs.microsoft.com/en-us/python/api/azureml-train-automl/azureml.train.automl.automlconfig(class)?view=azure-ml-py) configuration parameters!
-
-Let's run it locally in our Notebook, as the data isn't too big (depending on the complexity of our data, we would want to use Azure Machine Learning Compute again):
-
-```python
-local_run = experiment.submit(automl_config, show_output = True)
-```
-
-![alt text](../images/04-train_iterations.png "Train iterations")
-
-Once done, we can retrieve the best performing model (in this case, it is a [Pipeline](https://docs.microsoft.com/en-us/azure/machine-learning/service/concept-ml-pipelines)):
-
-```python
-best_run, fitted_model = local_run.get_output()
-print("Best run:", best_run)
-print("Best model:", fitted_model)
-```
-
-We can use the best model/pipeline, to score our test data and calculate our accuracy:
-
-```python
-y_pred = fitted_model.predict(X_test)
-
-sum_actuals = sum_errors = 0
-for actual_val, predict_val in zip(y_test, y_pred):
-    abs_error = actual_val - predict_val
-    if abs_error < 0:
-        abs_error = abs_error * -1
-
-    sum_errors = sum_errors + abs_error
-    sum_actuals = sum_actuals + actual_val
-
-mean_abs_percent_error = sum_errors / sum_actuals
-print("Model MAPE", mean_abs_percent_error)
-print("Model Accuracy", 1 - mean_abs_percent_error)
-```
-
-From here, we can have a look at the [following examples](https://github.com/Azure/MachineLearningNotebooks/tree/master/how-to-use-azureml/automated-machine-learning) to see how we can save and [deploy the model](https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/automated-machine-learning/classification-with-deployment/auto-ml-classification-with-deployment.ipynb).
-
-At this point:
-
-* We took the `Boston house prices dataset` and split it up into a train and test set
-* We let Automated Machine Learning evaluate 10 algorithms to predict the house prices in Boston
-* We picked the best performing model and ran it against the test dataset to get a final accuracy
-* There are a [lot more possibilities](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-configure-auto-train) with Automated Machine Learning, especially `Forecasting` is also supported
-* A lot more example notebooks for Azure Machine Learning can be found [here on GitHub](https://github.com/Azure/MachineLearningNotebooks)
-
-## Portal-driven
-
-Let's try a similar thing through the Azure Portal. This time, we'll use the `Pima Indians Diabetes` dataset: The Pima Indians Diabetes Dataset involves predicting the onset of diabetes within 5 years in Pima Indians given medical details. Since the Boston Dataset was a `regression` task, this here is a `classification` problem. Before getting started, have a look at the data set: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv).
+For this challenge, we'll use the `Pima Indians Diabetes` dataset: The Pima Indians Diabetes Dataset involves predicting the onset of diabetes within 5 years in Pima Indians given medical details. Before getting started, have a look at the data set: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv).
 
 **Note:**
-You can find more datasets for trying out AutoML on [this website](https://machinelearningmastery.com/standard-machine-learning-datasets/) - the `Wine Quality Dataset` also makes for a nice demo.
+You can find more datasets for trying out AutoML on [this website](https://machinelearningmastery.com/standard-machine-learning-datasets/) or obviously on [Kaggle](https://www.kaggle.com/) - by the way, the `Wine Quality Dataset` also makes for a nice demo.
 
-In your Machine Learning workspace, navigate to the `Automated machine learning` section and select `+ Create experiment`. You'll see that our last AutoML experiment with the Boston dataset also shows up here (have a look at it).
+**A word of caution:** Always make sure to only use properly formatted `csv` files with Automated Machine Learning. Especially incomplete lines/rows, e.g. missing a few commas, can throw off the service easily.
+
+## Automated Machine Learning
+
+In your Machine Learning workspace, navigate to the `Automated machine learning` section and select `+ Create experiment`.
 
 Give our new experiment a name and select a compute destination:
 
-![alt text](../images/04-automl_portal.png "Train iterations")
+![alt text](../images/04-automl_portal.png "AutoML Portal")
 
-We'll just keep using our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster.
+We can either re-use our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster or re-use the cluster from challenge 2. The `Create a new compute` window is self-explanatory after the last challenges!
+
+![alt text](../images/04-create_compute.png "Create new compute")
+
+Lastly, we can name our experiment:
 
 ![alt text](../images/04-automl_portal_name.png "Name our experiment")
 
-After hitting `Next`, we can upload our data set. I've re-uploaded the data set with headers here: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv)
+After hitting `Next`, we can upload our data set. We can access a cleansed version the data set with headers here: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv)
  
-Once uploaded, we can set the final details:
+Once uploaded, we can configure the final details:
 
 ![alt text](../images/04-automl_portal_create.png "Specify the storage details")
 
 And we will also see a preview of our data, where we can exclude features and also specify which column we want to predict:
 
-![alt text](../images/04-automl_data_preview.png "Specify the data set details")
+![alt text](../images/04-automl_data_preview.png "Configure our data set details")
 
-Also have a look at the `Profile` tab. This allows to see a brief overview of the data and can give early indication, if the data or some features are skewed.
+Also have a look at the `Profile` tab (will take a bit to load up). This allows to see a brief overview of the data and can give early indication, if the data or some features are skewed.
 
-Under `Advanced Settings`, it might be useful to set `Max concurrent iterations` to `4`, so that we utilize all cores available. 
+![alt text](../images/04-automl_data_profile.png "Data profile")
 
-Once we start training, it'll take a few minutes to ramp up the experiment. Overall, the 25 iterations take quite a while. Once they are through, you should see something like this:
+Under `Advanced Settings`, we can further configure our AutoML job and select our optimization metric, concurrency, etc. Let's set `Training job time (minutes)` to `10`. This means our training will terminate after a maximum of 10 minutes.
+
+Once we start the training, it'll take ~6 minutes to prepare the experiment. Overall, the default 100 iterations would take quite a while, but since we limited the training time to 10 minutes, it'll terminate earlier. Once the job has finished, we should see something like this:
 
 ![alt text](../images/04-automl_final_results.png "Final results")
 
-And the details per run:
+Below, we can see the metrics per iteration:
 
-![alt text](../images/04-automl_final_results_ind.png "Final results per run")
+![alt text](../images/04-automl_metrics_per_iteration.png "Metrics per iteration")
 
-From here, we can download the `.pkl` file per run. If we click one of the runs, we can now also deploy the model:
+If we click one of the iterations, we'll get plenty of metrics for the evaluated pipeline:
 
 ![alt text](../images/04-automl_run_details.png "Run details")
 
-Under `Deploy Model`, first register the model. Then download the `scoring.py` script and the `condaEnv.yml` configuration.
+Next, we can deploy one of the iterations to ACI.
 
-Head over to `Models` in the workspace, select the model and hit `Create Image`. Here we can upload the scoring and Conda environment files:
+## Model Deployment to ACI
 
-Once the image has been created, head to `Images`, select the image and hit `Create Deployment`:
+On the details screen for each iteration, we can download the Model's `.pkl` file and also directly deploy it to ACI. Let's deploy one of the models:
 
-![alt text](../images/04-automl_create_deployment.png "Create Image")
+![alt text](../images/04-automl_deploy.png "Deploy model")
 
-After a few minutes, our model should be up and running as an ACI. We can find the scoring URI under the deployment's details:
+In the same screen, we can also download the `yaml` for the Conda environment used, but more importantly, the `score.py` - this helps us to understand, what data we need to input into our API!
 
-![alt text](../images/04-automl_scoring_uri.png "Scoring URI")
+We can see how AutoML is first creating an image, and then starts the deployment to a new Azure Container Instance.
 
-Finally we can score one or more data samples using the following Python code:
+Once the deployment has finished (~7 minutes), we can find the scoring URI in our Workspace under `Deployments --> diabetes-api --> Details`:
+
+![alt text](../images/04-automl_deployment_details.png "Deployment details")
+
+ Finally we can score one or more data samples using the following Python code (just run the code in one of the former notebooks and replace `url`):
 
 ```python
 import requests
@@ -210,6 +107,8 @@ resp = requests.post(url, data=json.dumps(data), headers=headers)
 print("Prediction Results:", resp.json())
 ```
 
+Pretty easy, right?
+
 More details can be found [here](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-create-portal-experiments#deploy-model). We can obviously relatively easily re-use the code from challenge 3, and just swap out the `score.py` and the `conda.yml` for programmatically deploying the model.
 
 At this point:
@@ -217,4 +116,6 @@ At this point:
 * We took the `Pima Indians Diabetes Dataset` and ran automated Automated Machine Learning for classification on it
 * We evaluated 25 algorithms and achieved an accuracy of ~77.9% (your accuracy might vary, since it is not necessarily deterministic)
 * We took the best performing model and deployed it to ACI (similar to challenge 3)
-* If we don't like the model yet, we could also start further experimentation by taking the best performing pre-processing & algorithm and use it as a starting point
+* If we don't like the model yet, we could start further experimentation by taking the best performing pre-processing & algorithm pipeline and use it as a starting point
+
+So far, we have focused on deploying models to Azure Container Instances, which is great for testing scenarios. For production grade deployments, we want to use Azure Kubernetes Service, which we'll do in the [fifth challenge](challenge_05.md).
