@@ -62,7 +62,8 @@ compute_max_nodes = 1
 vm_size = "Standard_F16s_v2"
 
 # Check if a cluster with the same name already exists
-if compute_name in ws.compute_targets and type(compute_target) is AmlCompute:
+compute_targets = ws.compute_targets
+if compute_name in compute_targets and compute_targets[compute_name].type == 'AmlCompute':
     print("Found compute target, let's just reuse it:", compute_name)
     compute_target = ws.compute_targets[compute_name]
 
