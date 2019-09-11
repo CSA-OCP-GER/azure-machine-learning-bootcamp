@@ -50,10 +50,10 @@ dependencies:
 - python=3.6.2
 
 - pip:
-  - azureml-train-automl==1.0.60
+  - azureml-train-automl==1.0.60 # Required because we are using AutoML
   - inference-schema
-  - azureml-defaults # Needed for deployment to AKS
-  - azureml-monitoring # Needed for model monitoring
+  - azureml-defaults # Required for deployment to AKS
+  - azureml-monitoring # Required for model monitoring
 - numpy
 - pandas
 - scikit-learn
