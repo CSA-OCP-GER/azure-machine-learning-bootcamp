@@ -62,7 +62,7 @@ channels:
 - conda-forge
 ```
 
-For our scoring script, we want to leverage the `ModelDataCollector` for collecting input data and prediction results to Azure Blob:
+For our scoring script, we want to leverage the `ModelDataCollector` for collecting input data and prediction results to Azure Blob (make sure to set the `model_name`!):
 
 ```python
 %%writefile score.py
@@ -86,7 +86,7 @@ output_sample = np.array([0])
 
 def init():
     global model
-    model_name = 'AutoML833e85ec611'
+    model_name = 'AutoMLxxxxx' # Replace with your model id
     print ("Initializing model at " + time.strftime("%H:%M:%S"))
     model_path = Model.get_model_path(model_name = model_name)
     model = joblib.load(model_path)
