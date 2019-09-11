@@ -43,7 +43,7 @@ You'll be using your AAD (Azure Active Directory) user to log into `Jupyter`. Fr
 
 ## Initial Azure Machine Learning Setup
 
-Inside the newly created Notebook VM, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder.
+Inside the newly created Notebook VM, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder. This is because Machine Learning Services will persist the whole contents of the experiment's folder, which exceeds the limit when you run your Jupyter Notebooks in the root folder.
 
 ![alt text](../images/01-new_folder.png "New folder")
 
