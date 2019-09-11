@@ -97,7 +97,6 @@ import os, shutil
 
 script_folder = './scripts'
 os.makedirs(script_folder, exist_ok=True)
-shutil.copy('utils.py', script_folder)
 ```
 
 This cell writes the `train.py` to the `scripts` folder (we could have created it manually and copied it in):
@@ -336,7 +335,7 @@ model = run.register_model(model_name='keras-tf-mnist-model', model_path='output
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-If we want, we can also delete our Azure Machine Learning Compute cluster (we won't need it in the next challenge):
+If we want, we can also delete our Azure Machine Learning Compute cluster (we will need it again in challenge 4, but re-creation only takes 2 minutes):
 
 ```python
 compute_target.delete()

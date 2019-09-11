@@ -21,7 +21,7 @@ Give our new experiment a name and select a compute destination:
 
 ![alt text](../images/04-automl_portal.png "AutoML Portal")
 
-We can either re-use our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster or re-use the cluster from challenge 2. The `Create a new compute` window is self-explanatory after the last challenges!
+We can either re-use our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster or re-use the cluster from challenge 2. The `Create a new compute` window is self-explanatory after the last challenges (set minimum and maximum number of nodes to `1`)!
 
 ![alt text](../images/04-create_compute.png "Create new compute")
 
@@ -42,6 +42,8 @@ And we will also see a preview of our data, where we can exclude features and al
 Also have a look at the `Profile` tab (will take a bit to load up). This allows to see a brief overview of the data and can give early indication, if the data or some features are skewed.
 
 ![alt text](../images/04-automl_data_profile.png "Data profile")
+
+Next, make sure we set the job to `Classifcation` and define `diabetes` as the target column.
 
 Under `Advanced Settings`, we can further configure our AutoML job and select our optimization metric, concurrency, etc. Let's set `Training job time (minutes)` to `10`. This means our training will terminate after a maximum of 10 minutes.
 

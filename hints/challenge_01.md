@@ -152,7 +152,7 @@ y_test = load_data('./data/test-labels.gz', True).reshape(-1)
 run = experiment.start_logging()
 
 # Create a Logistic Regression classifier and train it
-clf = LogisticRegression()
+clf = LogisticRegression(multi_class='auto')
 clf.fit(X_train, y_train)
 
 # Predict classes of our testing dataset
