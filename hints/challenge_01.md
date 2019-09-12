@@ -35,7 +35,7 @@ It'll take a few minutes until the VM has been created. The primary use for this
 
 It'll take ~3 minutes until the VM is provisioned and ready to use.
 
-Once it is running, the UI will already give us a links to `Jupyter` and `JupyterHub`. To keep things simple, we'll use `Jupyter` throughout this bootcamp, but if you feel adventurous, use `JupyerHub`.
+Once it is running, the UI will already give us a links to `Jupyter` and `JupyterLab`. To keep things simple, we'll use `Jupyter` throughout this bootcamp, but if you feel adventurous, use `JupyerLab`.
 
 ![alt text](../images/01-notebook_vm_ready.png "Our Notebook VM is running")
 
