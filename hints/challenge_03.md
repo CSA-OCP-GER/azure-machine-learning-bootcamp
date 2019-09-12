@@ -5,15 +5,6 @@ Hence, we'll be taking the model and we will deploy it to an [Azure Container In
 
 **We'll reuse the same notebook as in challenge 2!**
 
-Our Azure Subscription must first have the resource providers for Azure Container Instances enabled (in 99% of the cases, this is probably already enabled in your subscription):
-
-```python
-!az provider show -n Microsoft.ContainerInstance -o table
-!az provider register -n Microsoft.ContainerInstance
-```
-
-The leading `!` tells the notebook cell to execute the code on the command line inside the Jupyter Notebook's VM.
-
 As before, let's import all necessary libraries and connect to our Workspace (we're probably already connected, but better safe than sorry):
 
 ```python
