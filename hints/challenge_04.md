@@ -59,6 +59,8 @@ If we click one of the iterations, we'll get plenty of metrics for the evaluated
 
 ![alt text](../images/04-automl_run_details.png "Run details")
 
+Without doubt, it is important to understand what those metrics actually mean, since this will allow us to judge if the generated model(s) are useful or not. [This link](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-understand-automated-ml) will help you understanding the metrics of Automated Machine Learning.
+
 Next, we can deploy one of the iterations to ACI.
 
 ## Model Deployment to ACI
