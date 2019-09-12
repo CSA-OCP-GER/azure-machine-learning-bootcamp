@@ -65,7 +65,7 @@ In this challenge, you'll be using Automated Machine Learning to let Azure figur
 
 Guidance:
 * Create an `Automated Machine Learning` experiment in your Azure Machine Learning Workspace
-* Take the [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv) data set as the input
+* Take the [`pima-indians-diabetes.csv`](data/pima-indians-diabetes.csv) data set as the input
 * Let it figure out the best performing model
 * **Bonus points**: Deploy the model to ACI as a scoring endpoint (takes just a few clicks)
 
