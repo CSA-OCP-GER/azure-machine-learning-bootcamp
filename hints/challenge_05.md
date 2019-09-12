@@ -170,7 +170,9 @@ aks_service_name ='diabetes-with-dc'
 
 wss = Webservice.list(workspace = ws, compute_type='AKS')
 
-if any(ws.name == aks_service_name for ws in wss):
+aks_service = next((ws for ws in wss if ws.name == aks_service_name), None)
+
+if aks_service != None:
     print('Model with same name already deployed')
 else:
     if aks_target.provisioning_state == "Succeeded":
