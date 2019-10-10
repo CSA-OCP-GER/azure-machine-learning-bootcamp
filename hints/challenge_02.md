@@ -270,7 +270,7 @@ est = Estimator(source_directory=script_folder,
                 script_params=script_params,
                 compute_target=compute_target,
                 entry_script='train.py',
-                conda_packages=['keras'])
+                conda_packages=['keras==2.2.4'])
 ```
 
 As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script some static parameters, but ideally we would [automatically try out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) to get superior accuracy (not covered here).
