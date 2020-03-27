@@ -217,7 +217,7 @@ model.add(Dense(num_classes, activation='softmax'))
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
-              metrics=['accuracy'])
+              metrics=['acc'])
 
 # Train our model and use callback to log every epoch to AML
 checkpoints = CheckpointCallback(run)
