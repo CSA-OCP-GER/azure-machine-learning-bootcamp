@@ -253,7 +253,43 @@ This looks a little bit more complex than our last example! Let's walk through w
 1. We log the final train and test accuracies to our experiment
 1. We save the model to the `outputs/` folder (Azure Machine Learning Compute will automatically upload that folder to the experiment afterwards)
 
-To get the training working, we need to package the scripts and "send" them to Azure Machine Learning Compute. Azure ML uses the `Estimator` class for that:
+To get the training working, we need create an environment, a run configuration and package the scripts. Then we "send" them to Azure Machine Learning Compute. Azure ML uses the `Estimator` class for that:
+
+```python
+from azureml.core import Environment
+from azureml.core.conda_dependencies import CondaDependencies
+from azureml.core.runconfig import RunConfiguration
+
+# Create a Python environment for the experiment
+# Let Azure ML manage dependencies by setting user_managed_dependencies to False
+# Use docker containers by setting docker.enabled to True
+# Our workspace needs to know what environment to use
+env = Environment("bootcamp-env")
+env.python.user_managed_dependencies = False # Let Azure ML manage dependencies
+env.docker.enabled = True # Use a docker container
+
+# Create a the pip and conda package dependencies
+packages = CondaDependencies.create(pip_packages=["tensorflow","keras", "astor", 'azureml-sdk', 
+                                                  'pynacl==1.2.1', 'azureml-dataprep'])
+
+# Add the package dependencies to the Python environment for the experiment
+env.python.conda_dependencies = packages
+    
+# Register the environment 
+env.register(workspace=ws)
+registered_env = Environment.get(ws, 'bootcamp-env')
+
+# Create a new runconfig object for the pipeline
+run_config = RunConfiguration()
+
+# Assign the target of the runconfig object to the cluster created above  
+run_config.target = compute_target
+
+# Assign the environment of the runconfig object to the registered environment
+run_config.environment = registered_env
+print ("Run configuration created.")
+
+```
 
 ```python
 from azureml.train.estimator import Estimator
@@ -266,11 +302,11 @@ script_params = {
     '--epochs': 8
 }
 
-est = Estimator(source_directory=script_folder,
+estimator = Estimator(source_directory=script_folder,
                 script_params=script_params,
-                compute_target=compute_target,
-                entry_script='train.py',
-                conda_packages=['keras==2.2.4'])
+                compute_target = compute_target,
+                environment_definition=run_config.environment,
+                entry_script='train.py')
 ```
 
 As you can see, we define where our scripts are, what the compute target should be, and the dependencies (`keras` in this case). Lastly, we also give in the script some static parameters, but ideally we would [automatically try out different hyperparameters](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-tune-hyperparameters) to get superior accuracy (not covered here).
@@ -280,7 +316,7 @@ As you can see, we define where our scripts are, what the compute target should 
 Lastly, we can kick off the job:
 
 ```python
-run = experiment.submit(config=est)
+run = experiment.submit(config=estimator)
 run
 ```
 
