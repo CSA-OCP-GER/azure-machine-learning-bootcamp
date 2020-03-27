@@ -54,40 +54,59 @@ def run(raw_data):
 We also need to tell Azure ML which dependencies our packaged model has (similar to when we used Azure Machine Learning Compute):
 
 ```python
-from azureml.core.conda_dependencies import CondaDependencies 
+from azureml.core import Environment
+from azureml.core.conda_dependencies import CondaDependencies
+from azureml.core.runconfig import RunConfiguration
+from azureml.core import Image
+from azureml.core.model import InferenceConfig, Model
+from azureml.core.webservice import AciWebservice, Webservice
+from azureml.core import Image
 
-myenv = CondaDependencies()
-myenv.add_pip_package("pynacl==1.2.1")
-myenv.add_pip_package("keras==2.2.4")
-myenv.add_pip_package("tensorflow==1.11.0")
-myenv.add_pip_package("pillow==5.3.0")
+# Create a Python environment for the experiment
+# Let Azure ML manage dependencies by setting user_managed_dependencies to False
+# Use docker containers by setting docker.enabled to True
+# Our workspace needs to know what environment to use
+env = Environment("bootcamp-env")
+env.python.user_managed_dependencies = False # Let Azure ML manage dependencies
+env.docker.enabled = True # Use a docker container
 
-with open("keras-tf-mnist.yml","w") as f:
-    f.write(myenv.serialize_to_string())
+# Create a the pip and conda package dependencies
+packages = CondaDependencies.create(pip_packages=["tensorflow","keras", "astor", "azureml-sdk", 
+                                                  "pynacl==1.2.1", "azureml-dataprep", "pillow==5.3.0",
+                                                  "azureml-defaults"
+                                                 ])
+
+# Add the package dependencies to the Python environment for the experiment
+env.python.conda_dependencies = packages
+
+# Combine scoring script & environment in Inference configuration
+inference_config = InferenceConfig(entry_script="score.py", environment=env)
+
 ```
 
 Finally, we are able to configure our Azure Container Instance and deploy our model as an API:
 
 ```python
 from azureml.core.webservice import AciWebservice, Webservice
-from azureml.core.image import ContainerImage
+from azureml.core.model import InferenceConfig, Model
 
-aci_config = AciWebservice.deploy_configuration(cpu_cores=1, 
+# Set deployment configuration
+deployment_config = AciWebservice.deploy_configuration(
+                                                cpu_cores=1, 
                                                 memory_gb=1, 
                                                 tags={"data": "MNIST",  "method" : "keras-tf"}, 
                                                 description='Predict MNIST with Keras and TensorFlow')
 
-image_config = ContainerImage.image_configuration(execution_script = "score.py", 
-                                    runtime = "python", 
-                                    conda_file = "keras-tf-mnist.yml")
 
-service = Webservice.deploy_from_model(name = "keras-tf-mnist-service",
-                                       deployment_config = aci_config,
-                                       models = [model],
-                                       image_config = image_config,
-                                       workspace = ws)
+# Define the model, inference, & deployment configuration and web service name and location to deploy
+service = Model.deploy(
+    workspace = ws,
+    name = "keras-service4",
+    models = [model],
+    inference_config = inference_config,
+    deployment_config = deployment_config)
 
-service.wait_for_deployment(show_output = True)
+service.wait_for_deployment(show_output=True)
 ```
 
 The first deployment should take around 5-8 minutes.
