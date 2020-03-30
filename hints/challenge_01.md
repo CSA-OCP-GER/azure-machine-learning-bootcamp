@@ -21,33 +21,33 @@ Let's have a look at our Resource Group:
 * Key vault - stores our secrets (will be used later)
 * Machine Learning service workspace - the center point for Machine Learning on Azure
 
-## Creating a Notebook VM
+## Creating a Compute VM
 
-Inside our `Machine Learning service workspace`, we'll create a new `Notebook VM`:
+Inside our `Machine Learning service workspace`, we'll create a new `Compute VM`:
 
-![alt text](../images/01-create_notebook_vm.png "Notebook VM")
+![alt text](../images/01-create_compute_vm.png "Compute VM")
 
 Hit `+ New`,keep it as `STANDARD_D3_V2` and give it a unique name:
 
-![alt text](../images/01-bootcamp_notebook_vm.png "Creating the Notebook VM for the bootcamp")
+![alt text](../images/01-bootcamp_compute_vm.png "Creating the Compute VM for the bootcamp")
 
 It'll take a few minutes until the VM has been created. The primary use for this VM is that we all have the same Jupyter environment. In this exercise, we'll use this VM to train a simple Machine Learning model. In a real-world setup, we might consider using a GPU-enable instance, in case we need to perform Deep Learning or just rely on Azure Machine Learning Compute (challenge 2).
 
 It'll take ~3 minutes until the VM is provisioned and ready to use.
 
-Once it is running, the UI will already give us a links to `Jupyter` and `JupyterLab`. To keep things simple, we'll use `Jupyter` throughout this bootcamp, but if you feel adventurous, use `JupyerLab`.
+Once it is running, the UI will already give us a links to `Jupyter`, `JupyterLab` and `RStudio`. To keep things simple, we'll use `Jupyter` throughout this bootcamp, but if you feel adventurous, use `JupyerLab` or `RStudio` solving the challenges in R.
 
-![alt text](../images/01-notebook_vm_ready.png "Our Notebook VM is running")
+![alt text](../images/01-compute_vm_ready.png "Our Compute VM is running")
 
 You'll be using your AAD (Azure Active Directory) user to log into `Jupyter`. From a enterprise security point, this is a big plus. No extra credentials needed! :raised_hands:
 
 ## Initial Azure Machine Learning Setup
 
-Inside the newly created Notebook VM, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder. This is because Machine Learning Services will persist the whole contents of the experiment's folder, which exceeds the limit when you run your Jupyter Notebooks in the root folder.
+Inside the newly created Compute VM, first create a new folder via the `New` button on the top right of Jupyter. Everything we'll do in this workshop should happen in this folder. This is because Machine Learning Services will persist the whole contents of the experiment's folder, which exceeds the limit when you run your Jupyter Notebooks in the root folder.
 
 ![alt text](../images/01-new_folder.png "New folder")
 
-**Note:** The next block is not needed anymore (as of May 2019), but you'd need it if you want to connect to your Azure Machine Learning Workspace from e.g., your local machine. Since the `Notebook VM` runs inside the workspace, it automatically connects to the workspace it lives in.
+**Note:** The next block is not needed anymore (as of May 2019), but you'd need it if you want to connect to your Azure Machine Learning Workspace from e.g., your local machine. Since the `Compute VM` runs inside the workspace, it automatically connects to the workspace it lives in.
 
 <details>
 ~~Next, create a text file called `config.json` (also via the `New` button) and replace the values with your own (you'll find your Subscription ID in the Azure Portal at the top of your Resource Group):~~
@@ -86,7 +86,7 @@ This first cell imports the relevant libraries from the Azure Machine Learning S
 
 ![alt text](../images/01-authenticate.png "Authenticate to our workspace")
 
-Have a look at the following note when experiencing subscription ID errors (this should not happen any more when using a `Azure Notebook VM`):
+Have a look at the following note when experiencing subscription ID errors (this should not happen any more when using a `Azure Compute VM`):
 
 <details>
 If you are using multiple subscriptions or tenants, it might be required to tell the Jupyter Notebook, which one it should use. Hence, create a new cell and adapt the following code to use your subscription id (the one you have used in `config.json`):
@@ -104,7 +104,7 @@ Next, let's create a new experiment (this will later show up in our Workspace af
 experiment = Experiment(workspace = ws, name = "scikit-learn-mnist")
 ```
 
-Let's load some test data into our Notebook VM (we'll do something more scalable in the next challenge):
+Let's load some test data into our Compute VM (we'll do something more scalable in the next challenge):
 
 ```python
 import os
@@ -240,20 +240,20 @@ Our model has been stored in the Storage Account that has been created initially
 
 At this point:
 
-* We've trained a Machine Learning model using scikit-learn inside a `Notebook VM` running `Jupyter`
+* We've trained a Machine Learning model using scikit-learn inside a `Compute VM` running `Jupyter`
 * We achieved `92%` accuracy (not very good for this data set)
 * Azure ML knows about our experiment and our initial run and tracked metrics
 * Azure ML saved our model file (`scikit-learn-mnist.pkl`) in Blob storage
 * We have registered our initial model as a Azure ML Model in our Workspace
 
-## (Bonus) Notebook VM Details
+## (Bonus) Compute VM Details
 
-If we have another look into our resource group `azure-ml-bootcamp`, we can see that the Notebook VM actually sits inside this group. It is just a regular Azure Virtual Machine:
+If we have another look into our resource group `azure-ml-bootcamp`, we can see that the Compute VM actually sits inside this group. It is just a regular Azure Virtual Machine:
 
-![alt text](../images/01-notebook_vm_portal.png "Notebook VM resources in portal")
+![alt text](../images/01-notebook_vm_portal.png "Compute VM resources in portal")
 
 Furthermore, we can go into our Workspace and also see it listed under `Compute`:
 
-![alt text](../images/01-notebook_vm_workspace.png "Notebook VM resources in our workspace")
+![alt text](../images/01-notebook_vm_workspace.png "Compute VM resources in our workspace")
 
 In the [next challenge](challenge_02.md), we'll build a more powerful model and use Azure Machine Learning Compute to train it on a remote cluster.
