@@ -111,13 +111,9 @@ service.wait_for_deployment(show_output=True)
 
 The first deployment should take around 5-8 minutes.
 
-In our Workspace, we can check the `Images` tab:
+Shortly after, we should see our ACI service coming up under the `Endpoints` tab:
 
-![alt text](../images/03-docker_creating.png "Our production image is being created")
-
-Shortly after, we should also see our ACI service coming up under the `Deployments` tab:
-
-![alt text](../images/03-aci_creating.png "Our ACI service is starting")
+![alt text](../images/03-aci_endpoints_creating.png "Our ACI is deploying")
 
 Lastly, we can print out the service URL and the state of the service:
 
