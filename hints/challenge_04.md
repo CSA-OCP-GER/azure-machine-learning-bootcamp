@@ -15,37 +15,48 @@ You can find more datasets for trying out AutoML on [this website](https://machi
 
 ## Automated Machine Learning
 
-In your Machine Learning workspace, navigate to the `Automated machine learning` section and select `+ Create experiment`.
+In your Machine Learning workspace, navigate to the `Automated ML` section and select `+ New Automated ML run`.
 
-Give our new experiment a name and select a compute destination:
+The process includes creating or selecting `a dataset`, `Configuring the run` and `Task type and settings`
 
-![alt text](../images/04-automl_portal.png "AutoML Portal")
+![alt text](../images/04-automl-process.png "AutoML Process")
 
-We can either re-use our Notebook VM, but we could also create a new `Azure Machine Learning compute` cluster or re-use the cluster from challenge 2. The `Create a new compute` window is self-explanatory after the last challenges (set minimum and maximum number of nodes to `1`)!
+Give our new dataset a name or selecting a existing one. For this challenge we will use a cleansed version the data set with headers here:  [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv)
+
+![alt text](../images/04-automl_dataset.png "AutoML Dataset")
+
+Then we can either re-use our previous storage or create a new one (in this case we can just use our existing one):
+
+![alt text](../images/04-automl_datastore_for_dataset.png "AutoML Datastore")
+
+Next we view the settings and preview and select `Use headers from the first file`
+
+![alt text](../images/04_automl_dataset_settings_preview.png "AutoML Dataset Settings")
+
+And we will also see a preview of our data, where we can exclude features and also specify which column we want to include. In this challenge we leave the schema as it is:
+
+![alt text](../images/04_automl_dataset_schema.png "AutoML Dataset Schema")
+
+Lastly we confirm the details:
+
+![alt text](../images/04_automl_confirm_details.png "AutoML Confirm Details")
+
+Then we can name our experiment and we can either re-use our Compute VM, but we could also create a new `Azure Machine Learning compute` cluster or re-use the cluster from challenge 2. The `Create a new compute` window is self-explanatory after the last challenges (set minimum and maximum number of nodes to `1`)!
 
 ![alt text](../images/04-create_compute.png "Create new compute")
 
-Lastly, we can name our experiment:
+or we use our existing one:
 
-![alt text](../images/04-automl_portal_name.png "Name our experiment")
+![alt text](../images/04-automl_compute.png "Use existing compute")
 
-After hitting `Next`, we can upload our data set. We can access a cleansed version the data set with headers here: [`pima-indians-diabetes.csv`](../data/pima-indians-diabetes.csv)
+
+Lastly we can configure the `Task type and settings` tab:
+
+![alt text](../images/04-automl_select_task_type.png "Select task type")
  
-Once uploaded, we can configure the final details:
+Here we make sure we set the job to `Classifcation` and define `diabetes` as the target column.
 
-![alt text](../images/04-automl_portal_create.png "Specify the storage details")
-
-And we will also see a preview of our data, where we can exclude features and also specify which column we want to predict:
-
-![alt text](../images/04-automl_data_preview.png "Configure our data set details")
-
-Also have a look at the `Profile` tab (will take a bit to load up). This allows to see a brief overview of the data and can give early indication, if the data or some features are skewed.
-
-![alt text](../images/04-automl_data_profile.png "Data profile")
-
-Next, make sure we set the job to `Classifcation` and define `diabetes` as the target column.
-
-Under `Advanced Settings`, we can further configure our AutoML job and select our optimization metric, concurrency, etc. Let's set `Training job time (minutes)` to `10`. This means our training will terminate after a maximum of 10 minutes.
+Under `View additional configuration settings`, we can further configure our AutoML job and select our optimization metric, concurrency, etc. Let's set `Training job time (minutes)` to `10`. This means our training will terminate after a maximum of 10 minutes.
 
 Once we start the training, it'll take ~6 minutes to prepare the experiment. Overall, the default 100 iterations would take quite a while, but since we limited the training time to 10 minutes, it'll terminate earlier. Once the job has finished, we should see something like this:
 
