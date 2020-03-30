@@ -87,9 +87,9 @@ The cluster VM(s) will take around 2-4 minutes to spin up (looks like this got a
 
 As we can see, we can configure our minimum and maximum cluster size, and most importantly, the VM size. In our example, we'll stick with a medium VM without GPU for saving cost. If you want, you can try out a more powerful VM, or even a `NC` instance. More details on further configuration parameters can be found [here](https://docs.microsoft.com/en-us/python/api/azureml-core/azureml.core.compute.amlcompute(class)?view=azure-ml-py#provisioning-configuration-vm-size-----vm-priority--dedicated---min-nodes-0--max-nodes-none--idle-seconds-before-scaledown-none--vnet-resourcegroup-name-none--vnet-name-none--subnet-name-none--tags-none--description-none-), as for example `idle_seconds_before_scaledown`, which defines when the cluster should auto-scale down (only makes sense if `min_nodes != max_nodes`).
 
-If we now look under the `Compute` tab in our Azure ML Workspace, we can see our Azure Machine Learning Compute cluster:
+If we now look under the `Compute` tab beneath `Training clusters` in our Azure ML Workspace, we can see our Azure Machine Learning Compute cluster:
 
-![alt text](../images/02-create_cluster.png "Creating our Machine Learning Compute cluster for training")
+![alt text](../images/02-create_training_cluster.png "Creating our Machine Learning Compute cluster for training")
 
 In the last challenge, we had all our code in our Jupyter Notebook. Since we're training remotely now, our Machine Learning Compute cluster needs to somehow get the Python code for reading the data and training our model. Hence, we create a `scripts` folder and put our training Python code in it (useful if we're using multiple `*.py` files):
 
@@ -302,6 +302,7 @@ script_params = {
     '--epochs': 8
 }
 
+# Training Script and Parameters are used in the estimator to run an experiment
 estimator = Estimator(source_directory=script_folder,
                 script_params=script_params,
                 compute_target = compute_target,
@@ -372,7 +373,7 @@ model = run.register_model(model_name='keras-tf-mnist-model', model_path='output
 print(model.name, model.id, model.version, sep = '\t')
 ```
 
-If we want, we can also delete our Azure Machine Learning Compute cluster (we will need it again in challenge 4, but re-creation only takes 2 minutes):
+If we want, we can also delete our Azure Machine Learning Compute cluster (we will need it again in challenge 3, but re-creation only takes 2 minutes):
 
 ```python
 compute_target.delete()
