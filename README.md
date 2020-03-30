@@ -32,7 +32,7 @@ The goal is to build a machine learning model, that
 
 Guidance:
 * Deploy from Azure Portal: `Machine Learning service workspace`
-* Write your code in a Jupyter Notebook in a [Notebook VM](https://docs.microsoft.com/en-us/azure/machine-learning/service/quickstart-run-cloud-notebook)
+* Write your code in a Jupyter Notebook in a [Compute VM](https://docs.microsoft.com/en-us/azure/machine-learning/service/quickstart-run-cloud-notebook) and use the [new Azure ML UI](https://ml.azure.com)
 * Use `Python 3.6 - AzureML` as the Notebook type in Jupyter (create a new folder before starting)
 * We'll be using `scikit-learn` to train a simple `LogisticRegression` classifier
 * Target accuracy of our model on the test data set: `>92%`
