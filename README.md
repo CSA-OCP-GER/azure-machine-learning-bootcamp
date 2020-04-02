@@ -65,7 +65,7 @@ In this challenge, you'll be using Automated Machine Learning to let Azure figur
 
 Guidance:
 * Create an `Automated Machine Learning` experiment in your Azure Machine Learning Workspace
-* Take the [`pima-indians-diabetes.csv`](data/pima-indians-diabetes.csv) data set as the input
+* Take the [`pima-indians-diabetes.csv`](data/pima-indians-diabetes.csv) dataset as the input
 * Let it figure out the best performing model
 * **Bonus points**: Deploy the model to ACI as a scoring endpoint (takes just a few clicks)
 
@@ -73,11 +73,12 @@ Guidance:
 
 :zap: Here are some **[hints](hints/challenge_05.md)** for this challenge!
 
-In this last challenge, you'll be deploying the model from challenge 4 to Azure Kubernetes Service (AKS). Since this will mimic a production deployment, we want to make sure to enable authentication, telemetry monitoring (using Application Insights) and data collection (to Azure Blob) for our model!
+In this last challenge, you'll be training a model and deploying the model to showcase how you can use AutoML for a simple classification problem. This model will predict if a credit card transaction is considered a fraudulent charge. But this time we'll deploy the model to Azure Kubernetes Service (AKS). Since this will mimic a production deployment, we want to make sure to enable authentication and telemetry monitoring (using Application Insights) for our model!
 
 Guidance:
-* Re-use the already registered model from challenge 4 in your workspace 
-* Create a scoring script with [data collection enabled](https://docs.microsoft.com/bs-latn-ba/azure/machine-learning/service/how-to-enable-data-collection)
+* Create an `Automated Machine Learning` experiment, train, register and deploy the model via Python
+* Retrieve the scoring script and the environment file from the `Automated Machine Learning` experiment
+* Take the [`creditcard.csv`](data/creditcard.csv) dataset as the input
 * Create a AKS cluster
 * Deploy the model with authentication and [monitoring](https://docs.microsoft.com/en-us/azure/machine-learning/service/how-to-enable-app-insights)
 
