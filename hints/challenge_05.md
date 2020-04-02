@@ -272,7 +272,7 @@ inference_config = InferenceConfig(entry_script=script_file_name, environment=my
 aks_config = AksWebservice.deploy_configuration(collect_model_data=True,
                                                 enable_app_insights=True)
 
-aks_service_name = 'automl-creditcard-fraud'
+aks_service_name = 'creditcard-fraud'
 aks_service = Model.deploy(workspace=ws,
                            name=aks_service_name,
                            models=[model],
